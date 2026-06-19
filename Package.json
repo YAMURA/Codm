@@ -1,0 +1,11 @@
+{
+  "name": "codm-project",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node index.js",
+    "build": "echo 'Building...'"
+  },
+  "dependencies": {
+    // Your dependencies here
+  }
+}
